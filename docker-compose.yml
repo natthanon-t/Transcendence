@@ -15,6 +15,26 @@ services:
     networks:
       - app-net
     restart: unless-stopped
+  #django:
+  #  build:
+  #    context: .
+  #  ports:
+  #    - "8000:8000"
+  #  environment:
+  #    - EMAIL_HOST=smtp
+  #    - EMAIL_PORT=587
+  #    - EMAIL_USER=dtranscen@gmail.com
+  #    - EMAIL_PASSWORD=Aa123456789.
+  #  depends_on:
+  #    - smtp
+
+  smtp:
+    image: catatnight/postfix
+    environment:
+      - maildomain=example.com
+      - smtp_user=user:yourpassword
+    ports:
+      - "587:587"
 
   #nginx:
   #  build:
