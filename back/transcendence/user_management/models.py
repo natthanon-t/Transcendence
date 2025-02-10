@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.password_validation import validate_password
-from django.core.validators import MinLengthValidator, MaxLengthValidator
-
 
 class CustomUserManager(BaseUserManager):
 	def create_user(self, username, email, password=None, **extra_fields):
@@ -22,12 +20,6 @@ class CustomUser(AbstractUser):
 			'unique': "username-exists-error",
 		}
 	)
-	alias = models.CharField(
-        max_length=12,
-        validators=[MinLengthValidator(1), MaxLengthValidator(12)],
-        blank=True,  # Allowing it to be optional
-        null=True,   # Allowing it to be null in the database
-    )
 	email = models.EmailField(
 		unique=True,
 		error_messages={
@@ -37,7 +29,6 @@ class CustomUser(AbstractUser):
 	profile_picture = models.ImageField(upload_to='profile_pictures/', default='profile_pictures/default.jpg')
 	friends = models.ManyToManyField('self', blank=True) #--- get friend list
 	online_status = models.BooleanField(default=False)
-	gdprCheckbox = models.BooleanField(default=True)
 	objects = CustomUserManager()
 
 	def __str__(self):
