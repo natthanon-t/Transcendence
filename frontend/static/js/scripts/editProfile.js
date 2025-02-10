@@ -2,7 +2,7 @@ import { updateTextForElem } from "../utils/languages.js";
 import { navigateTo } from '../index.js';
 import { BASE_URL } from '../index.js';
 import { isUserConnected } from "../utils/utils.js";
-import { validateUsername, validateEmail, validatePassword  } from "../utils/validateInput.js";
+import { validateUsername, validateEmail, validatePassword } from "../utils/validateInput.js";
 
 // Function that will be called when the view is loaded
 export async function editProfile () {
@@ -16,10 +16,7 @@ export async function editProfile () {
 		profilePicture: false,
 		username: false,
 		email: false,
-		alias: false,
-		password: false,
-		gdprCheckbox: false
-
+		password: false
 	};
 
     // Get the form elements from the HTML
@@ -28,22 +25,16 @@ export async function editProfile () {
 	const usernameElem = document.getElementById('username');
 	const emailElem = document.getElementById('email');
 	const passwordElem = document.getElementById('password');
-	const aliasElem = document.getElementById('alias');
-	const gdprCheckboxElem = document.getElementById('gdprCheckbox');
-
 
 	const usernameErrorElem = document.getElementById('username-error');
 	const emailErrorElem = document.getElementById('email-error');
 	const passwordErrorElem = document.getElementById('password-error');
 	const avatarErrorElem = document.getElementById('avatar-error');
-	const aliasErrorElem = document.getElementById('alias-error');
-	const gdprCheckboxErrorElem = document.getElementById('gdprCheckbox-error');
 
 	// Add event listeners for when the user leaves the input fields
 	usernameElem.addEventListener('blur', () => validateUsername(usernameElem, usernameErrorElem));
 	emailElem.addEventListener('blur', () => validateEmail(emailElem, emailErrorElem));
 	passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
-	//aliasElem.addEventListener('blur', () => validatealias(aliasElem, aliasErrorElem));
 
 	avatarInputElem.addEventListener('change', () => {
 		changes.profilePicture = true;
@@ -63,14 +54,6 @@ export async function editProfile () {
 	passwordElem.addEventListener('change', () => {
 		changes.password = true;
 	});
-	aliasElem.addEventListener('change', () => {
-		changes.alias = true;
-	});
-	gdprCheckboxElem.addEventListener('change', () => {
-		console.log("GDPR checkbox changed:", gdprCheckboxElem.checked);
-		changes.gdprCheckbox = true;
-	});
-
 
 	// Add event listener for the submit button
 	const saveButtonElem = document.getElementById('save-button');
@@ -96,10 +79,6 @@ export async function editProfile () {
 
 		usernameElem.value = user.username;
 		emailElem.value = user.email;
-		aliasElem.value = user.alias;
-		gdprCheckboxElem.checked = user.gdprCheckbox === true || user.gdprCheckbox === "true";
-
-
 	}
 
 	// Validates profile picture
@@ -170,24 +149,6 @@ export async function editProfile () {
 			}
 			formData.append('password', passwordElem.value);
 		}
-		if (changes.alias) {
-			// if (!validatealias(aliasElem, aliasErrorElem)) {
-			// 	formValid = false;
-			// }
-			formData.append('alias', aliasElem.value);
-		}
-		if (changes.gdprCheckbox) {
-			// if (!validatealias(aliasElem, aliasErrorElem)) {
-			// 	formValid = false;
-			// }
-			//formData.append('gdprCheckbox', gdprCheckboxElem.checked ? "true" : "false");
-			formData.append('gdprCheckbox', gdprCheckboxElem.checked ? "true" : "false");
-
-			//formData.append('gdprCheckbox', gdprCheckboxElem.checked);
-
-		}
-
-
 
 		if (formValid) {
 			// Send the data to the server
@@ -209,12 +170,6 @@ export async function editProfile () {
 				}
 				if (responseData.password) {
 					updateTextForElem(document.getElementById('password-error'), responseData.password[0]);
-				}
-				if (responseData.alias) {
-					updateTextForElem(document.getElementById('alias-error'), responseData.alias[0]);
-				}
-				if (responseData.gdprCheckbox) {
-					updateTextForElem(document.getElementById('gdprCheckbox-error'), responseData.gdprCheckbox[0]);
 				}
 			} else if (response.status === 200) {
 				// If the response status is success, show success message and navigate to the login page
