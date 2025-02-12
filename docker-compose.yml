@@ -81,15 +81,18 @@ services:
     ports:
       - "3000:3000"
     environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-    depends_on:
-      - prometheus
+      - GF_SECURITY_DISABLE_INITIAL_ADMIN_CHANGE=true
     networks:
       - transcendence
-    user: root
     volumes:
-      - ./prometheus/import_dashboards.sh:/import_dashboards.sh  # Mount the script
-    #entrypoint: ["/bin/bash", "-c", "apk add --no-cache jq && /import_dashboards.sh && /run.sh"]
+      - ./grafana/dashboards:/var/lib/grafana/dashboards/
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+      - db
+
   node_exporter:
     image: prom/node-exporter:latest
     container_name: node_exporter
@@ -109,6 +112,8 @@ services:
       - "9187:9187"
     networks:
       - transcendence
+    depends_on:
+      - db
 
 volumes:
   media_volume:

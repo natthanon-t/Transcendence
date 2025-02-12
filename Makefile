@@ -6,7 +6,9 @@ all: up
 
 # Build the docker images and the containers and start them
 up:
+	@mkdir -p ${PWD}/grafana/dashboards
 	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} up -d --build
+
 
 # Stop the containers and remove them
 down:
