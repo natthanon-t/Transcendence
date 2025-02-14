@@ -12,20 +12,6 @@ export const validateUsername = (usernameElem, usernameErrorElem) => {
 	}
 }
 
-// export const validatealias = (aliasElem, aliasErrorElem) => {
-// 	const aliasElem = aliasElem.value;
-// 	if (aliasElem === '') {
-// 		updateTextForElem(aliasErrorElem, 'alias-empty-error');
-// 		return false;
-// 	} else if (alias.length > 12) {
-// 		updateTextForElem(aliasErrorElem, 'alias-long-error');
-// 		return false;
-// 	} else {
-// 		aliasErrorElem.textContent = '\u00A0';
-// 		return true;
-// 	}
-// }
-
 export const validateEmail = (emailElem, emailErrorElem) => {
 	const email = emailElem.value;
 	const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

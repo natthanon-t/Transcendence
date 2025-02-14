@@ -31,18 +31,6 @@
 				<small class="text-danger" id="password-error">&nbsp;</small>
 			</div>
 		</div>
-
-        <!-- GDPR Agreement Checkbox -->
-        <div class="row justify-content-center mb-3">
-            <div class="col-12 text-left">
-                <input type="checkbox" id="gdprCheckbox" width="30">
-                <label for="gdpr-checkbox" class="text-white">
-                    I agree to the <a href="#" id="gdpr-link" class="text-light">Privacy Policy</a>
-                </label>
-                <small class="text-danger" id="gdpr-error">&nbsp;</small>
-            </div>
-        </div>
-
 		<div class="row justify-content-center mt-4">
 			<div class="col-12 text-center">
 				<button class="btn btn-lg text-light btn-filled" id="sign-up-button" data-translate="sign up">sign up</button>
@@ -54,54 +42,7 @@
 			</div>
 		</div>
     </form>
+	<a role="button" class="return-btn btn btn-lg text-light text-center d-flex align-items-center justify-content-center p-3 mt-5" href="/" data-link>
+		<img src="static/assets/UI/icons/setting.svg" alt="setting button" id="setting">
+	</a>
 </div>
-
-<!-- GDPR Modal (Auto Popup) -->
-<div class="modal fade" id="gdprModal" tabindex="-1" aria-labelledby="gdprModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="gdprModalLabel">GDPR Agreement</h5>
-            </div>
-            <div class="modal-body">
-                <p>We use your data to improve our service. By continuing, you accept our <a href="/privacy-policy" target="_blank">Privacy Policy</a>.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="gdpr-decline">Decline</button>
-                <button type="button" class="btn btn-primary" id="gdpr-accept">Accept</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-	document.addEventListener("DOMContentLoaded", function () {
-    let gdprCheckbox = document.querySelector("#gdpr-checkbox");
-    let gdprError = document.querySelector("#gdpr-error");
-
-    // Auto show GDPR modal when page loads
-    let gdprModal = new bootstrap.Modal(document.querySelector("#gdprModal"));
-    gdprModal.show();
-
-    // Accept GDPR -> Check the checkbox
-    document.querySelector("#gdpr-accept").addEventListener("click", function () {
-        gdprCheckbox.checked = true;
-        gdprError.textContent = "";
-        gdprModal.hide();
-    });
-
-    // Decline GDPR -> Prevent signing up
-    document.querySelector("#gdpr-decline").addEventListener("click", function () {
-        gdprCheckbox.checked = false;
-        gdprModal.hide();
-    });
-
-    // Show error if GDPR is not checked when clicking Sign Up
-    document.querySelector("#sign-up-button").addEventListener("click", function (e) {
-        if (!gdprCheckbox.checked) {
-            e.preventDefault();
-            gdprError.textContent = "You must agree to the GDPR policy.";
-        }
-    });
-});
-
-	</script>

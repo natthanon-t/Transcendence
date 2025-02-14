@@ -12,11 +12,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = CustomUser
-		fields = ('id', 'username', 'email', 'password', 'profile_picture', 'profile_picture_url', 'online_status','alias','gdprCheckbox')
-		extra_kwargs = {
-            'password': {'write_only': True}
-            #'alias': {'required': False, 'allow_blank': False, 'max_length': 12},
-        }
+		fields = ('id', 'username', 'email', 'password', 'profile_picture', 'profile_picture_url', 'online_status')
+		extra_kwargs = {'password': {'write_only': True}}
 
 	def get_profile_picture_url(self, obj):
 		if obj.profile_picture:
@@ -31,10 +28,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
 			raise serializers.ValidationError({'username': ['username-empty-error']})
 		if 'password' in data and not data['password']:
 			raise serializers.ValidationError({'password': ['password-empty-error']})
-		if 'alias' in data:
-			alias = data['alias']
-			if not (1 <= len(alias) <= 12):
-				raise serializers.ValidationError({'alias': ['alias-length-error']})
 		return super().to_internal_value(data)
 
 	def create(self, validated_data):
@@ -60,7 +53,5 @@ class CustomUserSerializer(serializers.ModelSerializer):
 			password = validated_data['password']
 			validate_password(password, user=instance)
 			instance.set_password(password)
-		if 'alias' in validated_data:
-			instance.alias = validated_data['alias']
 		instance.save()
 		return instance

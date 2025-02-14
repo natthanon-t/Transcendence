@@ -50,19 +50,6 @@ export async function profile() {
 		});
 		// Empty the local storage
 		localStorage.removeItem('user_id');
-		// localStorage.removeItem('pacmanSkin');
-		// localStorage.removeItem('ghostSkin');
-		// localStorage.removeItem('pacmanGamemode');
-		// localStorage.removeItem('mapName');
-		// localStorage.removeItem('pacmanKeybinds');
-		// localStorage.removeItem('pacmanTheme');
-		// localStorage.removeItem('themeName');
-		// localStorage.removeItem('pacmanUsernames');
-		// localStorage.removeItem('pongColors');
-		// localStorage.removeItem('pongUsernames');
-		// localStorage.removeItem('pongKeybinds');
-		// localStorage.removeItem('gamemode');
-		// localStorage.removeItem('pongGamestyle');
 
 		// Redirect to the login page
 		navigateTo('/signin');

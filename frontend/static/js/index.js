@@ -8,6 +8,8 @@ import SignUp from "./views/SignUp.js";
 import EditProfile from "./views/EditProfile.js";
 import Startpage from "./views/Start.js";
 import Friends from "./views/Friends.js";
+import pongtd from "./views/pongtd.js";
+
 
 // ------------------------------- IMPORT UTILS ---------------------------------
 import { updateTexts } from "./utils/languages.js";
@@ -15,7 +17,6 @@ import { applySettings } from "./utils/applySettings.js";
 import { attachEventListenersToLinks } from "./utils/utils.js";
 import game from "./views/game.js";
 import selectgame from "./views/selectgame.js";
-import tdgame from "./views/tdgame.js";
 import tournamentgame from "./views/tournamentgame.js";
 
 // ------------------------------- CONFIGURE GLOBAL VARIABLES -------------------------------
@@ -48,7 +49,7 @@ const routes = [
 	{ path: "/", view: Startpage },
 	{ path: "/game", view: game},
 	{ path: "/selectgame", view: selectgame},
-	{ path: "/tdgame", view: tdgame},
+	{ path: "/pongtd", view: pongtd},
 	{ path: "/tournamentgame", view: tournamentgame},
 	{ path: "/friends", view: Friends }
 ];
@@ -91,6 +92,8 @@ const router = async () => {
 	// Initialize with default language
 	updateTexts();
 };
+
+
 
 // ------------------------------- NAVIGATION -------------------------------
 // Navigate to a new view
