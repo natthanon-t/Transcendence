@@ -8,8 +8,7 @@ import SignUp from "./views/SignUp.js";
 import EditProfile from "./views/EditProfile.js";
 import Startpage from "./views/Start.js";
 import Friends from "./views/Friends.js";
-import pongtd from "./views/pongtd.js";
-
+import resetpass from "./views/resetpass.js";
 
 // ------------------------------- IMPORT UTILS ---------------------------------
 import { updateTexts } from "./utils/languages.js";
@@ -17,10 +16,12 @@ import { applySettings } from "./utils/applySettings.js";
 import { attachEventListenersToLinks } from "./utils/utils.js";
 import game from "./views/game.js";
 import selectgame from "./views/selectgame.js";
+import tdgame from "./views/tdgame.js";
 import tournamentgame from "./views/tournamentgame.js";
+//import auth from "./views/auth.js";
 
 // ------------------------------- CONFIGURE GLOBAL VARIABLES -------------------------------
-export const BASE_URL = "https://localhost";
+export const BASE_URL = "https://localhost:8443";
 export const BIG_TEXT = '20px';
 export const DEFAULT_TEXT = '16px';
 
@@ -49,9 +50,14 @@ const routes = [
 	{ path: "/", view: Startpage },
 	{ path: "/game", view: game},
 	{ path: "/selectgame", view: selectgame},
-	{ path: "/pongtd", view: pongtd},
+	{ path: "/tdgame", view: tdgame},
 	{ path: "/tournamentgame", view: tournamentgame},
-	{ path: "/friends", view: Friends }
+	{ path: "/friends", view: Friends },
+	{ path: "/resetpass", view: resetpass }
+	
+
+	
+	// { path: "/auth", view: auth }
 ];
 
 // Loads the view (HTML and JS) in the div with the id "app" according to the current path
@@ -92,8 +98,6 @@ const router = async () => {
 	// Initialize with default language
 	updateTexts();
 };
-
-
 
 // ------------------------------- NAVIGATION -------------------------------
 // Navigate to a new view

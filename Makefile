@@ -4,6 +4,13 @@ PROJECT_NAME = transcendence
 # Default target
 all: up
 
+# Run database migrations
+migrate:
+
+	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} exec web python /back/transcendence/manage.py makemigrations user_management
+	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} exec web python /back/transcendence/manage.py migrate
+
+restart: down up
 # Build the docker images and the containers and start them
 up:
 	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} up -d --build

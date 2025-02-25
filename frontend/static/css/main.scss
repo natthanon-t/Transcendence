@@ -7,23 +7,3 @@
 
 // Import Bootstrap SCSS
 @import "../../node_modules/bootstrap/scss/bootstrap";
-
-// ------------------------------------------- Custom SCSS -------------------------------------------
-@import "scss/variables";
-@import "scss/functions";
-@import "scss/reset";
-@import "scss/animations";
-@import "scss/global";
-@import "scss/typography";
-@import "scss/background";
-@import "scss/effects";
-@import "scss/responsive";
-@import "scss/accessibility";
-
-// Pages SCSS
-@import "scss/pages/settings";
-@import "scss/pages/home";
-@import "scss/pages/login";
-@import "scss/pages/profile";
-@import "scss/pages/editProfile";
-@import "scss/pages/friends";

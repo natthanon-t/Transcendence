@@ -1,4 +1,12 @@
 {
+	"forgot":"ลืมรหัส",
+	"forgotclick":"คลิกที่นี้",	
+	"email-reset":"Email",
+	"ResetPassword":"ตั้งรหัสใหม่",
+	"email-send-failed":"ไม่สามารถส่ง Email ได้",
+	"btn2FA":"Submit 2FA",
+	"2fa-empty-error":"Error 2FA",
+	"alias":"ชื่อเล่น",
 	"aimode":"AI โหมด",
 	"3dmode":"3D โหมด",
 	"tournamentmode":"โหมดการแข่งขัน",

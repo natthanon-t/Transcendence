@@ -201,11 +201,11 @@ class PongGame extends HTMLElement {
 
 
 	checkForWinner() {
-        if (this.userScore >= 5) {
+        if (this.userScore >= 3) {
             alert("You Win!");
             // window.location.href = "profile.html";  // Go to a new page when the player wins
         }
-        if (this.comScore >= 5) {
+        if (this.comScore >= 3) {
             alert("Computer Wins!");
             // window.location.href = "profile.html";  // Go to a different page when the computer wins
         }
@@ -221,7 +221,7 @@ class PongGame extends HTMLElement {
 			this.draw();
 			requestAnimationFrame(() => this.update());
 		}
-		else if (this.userScore == 5 || this.comScore == 5)
+		else if (this.userScore == 3 || this.comScore == 3)
 		{
 			this.checkForWinner();
 		}
