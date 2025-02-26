@@ -118,6 +118,18 @@ services:
     depends_on:
       - db
 
+  nginx_exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx_exporter
+    ports:
+      - "9113:9113"
+    command:
+    - '--nginx.scrape-uri=https://nginx:8443/status'
+    networks:
+      - transcendence
+    depends_on:
+      - nginx
+
   #elasticsearch:
   #  image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
   #  container_name: elasticsearch
