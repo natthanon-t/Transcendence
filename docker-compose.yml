@@ -64,57 +64,57 @@ services:
       - 8080:8080
     networks:
       - transcendence
-  #prometheus:
-  #  image: prom/prometheus:latest
-  #  container_name: prometheus
-  #  restart: always
-  #  ports:
-  #    - "9090:9090"
-  #  volumes:
-  #    - ./prometheus:/etc/prometheus
-  #  networks:
-  #    - transcendence
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+    networks:
+      - transcendence
 
-  #grafana:
-  #  image: grafana/grafana:latest
-  #  container_name: grafana
-  #  restart: always
-  #  ports:
-  #    - "3000:3000"
-  #  environment:
-  #    - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
-  #    - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-  #    - GF_SECURITY_DISABLE_INITIAL_ADMIN_CHANGE=true
-  #  networks:
-  #    - transcendence
-  #  volumes:
-  #    - ./grafana/dashboards:/var/lib/grafana/dashboards/
-  #    - ./grafana/provisioning:/etc/grafana/provisioning
-  #  depends_on:
-  #    - prometheus
-  #    - db
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_SECURITY_DISABLE_INITIAL_ADMIN_CHANGE=true
+    networks:
+      - transcendence
+    volumes:
+      - ./grafana/dashboards:/var/lib/grafana/dashboards/
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+      - db
 
-  #node_exporter:
-  #  image: prom/node-exporter:latest
-  #  container_name: node_exporter
-  #  restart: always
-  #  ports:
-  #    - "9100:9100"
-  #  networks:
-  #    - transcendence
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    restart: always
+    ports:
+      - "9100:9100"
+    networks:
+      - transcendence
 
-  #postgres_exporter:
-  #  image: wrouesnel/postgres_exporter:latest
-  #  container_name: postgres_exporter
-  #  restart: always
-  #  environment:
-  #    - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable
-  #  ports:
-  #    - "9187:9187"
-  #  networks:
-  #    - transcendence
-  #  depends_on:
-  #    - db
+  postgres_exporter:
+    image: wrouesnel/postgres_exporter:latest
+    container_name: postgres_exporter
+    restart: always
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable
+    ports:
+      - "9187:9187"
+    networks:
+      - transcendence
+    depends_on:
+      - db
 
   #elasticsearch:
   #  image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0

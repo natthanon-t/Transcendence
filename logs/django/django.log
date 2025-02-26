@@ -38,3 +38,7 @@ INFO 2025-02-23 23:30:54,208 autoreload Watching for file changes with StatReloa
 INFO 2025-02-24 09:58:13,298 autoreload Watching for file changes with StatReloader
 INFO 2025-02-25 17:48:04,669 autoreload Watching for file changes with StatReloader
 INFO 2025-02-25 18:30:38,388 autoreload Watching for file changes with StatReloader
+INFO 2025-02-26 11:25:44,010 autoreload Watching for file changes with StatReloader
+WARNING 2025-02-26 11:25:54,036 basehttp "GET /api/profile HTTP/1.0" 401 32
+INFO 2025-02-26 11:27:45,622 autoreload Watching for file changes with StatReloader
+WARNING 2025-02-26 11:27:58,256 basehttp "GET /api/profile HTTP/1.0" 401 32
