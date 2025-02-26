@@ -1,0 +1,9 @@
+// Import helper modules
+@use "sass:math";
+
+// ------------------------------------------- Bootstrap -------------------------------------------
+// Bootstrap override variables
+// $primary: #6c757d;
+
+// Import Bootstrap SCSS
+@import "../../node_modules/bootstrap/scss/bootstrap";

@@ -1,0 +1,19 @@
+<button onclick="loginWith42()">Login with 42</button>
+<script type="module" src="./auth.js"></script>
+
+<a href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-849a7dcda14591e5465fab449fe2fa1d9a6298d8fb9c6d9d9122929a36fb4571&redirect_uri=https%3A%2F%2Flocalhost%2Fapi%2Fauth%2F42%2Fcallback%2F&response_type=code">
+    login 42
+</a>
+
+# 42 API Credentials
+FORTYTWO_CLIENT_ID = 'u-s4t2ud-849a7dcda14591e5465fab449fe2fa1d9a6298d8fb9c6d9d9122929a36fb4571'
+FORTYTWO_CLIENT_SECRET = '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'
+FORTYTWO_REDIRECT_URI = 'https://localhost/auth'
+
+# 42 API Endpoints
+FORTYTWO_AUTH_URL = "https://api.intra.42.fr/oauth/authorize"
+FORTYTWO_TOKEN_URL = "https://api.intra.42.fr/oauth/token"
+FORTYTWO_USER_URL = "https://api.intra.42.fr/v2/me"
+
+
+https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-849a7dcda14591e5465fab449fe2fa1d9a6298d8fb9c6d9d9122929a36fb4571&redirect_uri=https://localhost/auth&response_type=code

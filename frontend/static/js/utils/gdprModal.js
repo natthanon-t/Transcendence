@@ -1,0 +1,74 @@
+export function showGdprModal() {
+    // Remove existing modal if present
+    const existingModal = document.getElementById('gdprModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Create modal structure
+    const modalHTML = `
+        <div class="modal fade" id="gdprModal" tabindex="-1" aria-labelledby="gdprModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content glass">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-white" id="gdprModalLabel">GDPR Policy</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-white">
+                        <p>
+                            We take your privacy seriously. This website collects personal data for account creation,
+                            security purposes, and improving user experience. By signing up, you agree to our
+                            <a href="/privacy-policy" class="text-light">Privacy Policy</a>.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" id="acceptGdpr">Accept</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Append modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Initialize and show modal
+    const gdprModal = new bootstrap.Modal(document.getElementById('gdprModal'));
+    gdprModal.show();
+
+    // Handle "Accept" button click
+    document.getElementById("acceptGdpr").addEventListener("click", function() {
+        document.getElementById("gdprConsent").checked = true; // Check consent box
+        gdprModal.hide(); // Close modal
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("submitForm");
+    const submitButton = document.getElementById("submitBtn");
+
+    if (submitButton) { // Ensure the button exists before adding event listeners
+        submitButton.addEventListener("click", function (event) {
+            const gdprConsent = document.getElementById("gdprConsent");
+
+            if (gdprConsent && !gdprConsent.checked) { // Ensure the checkbox exists
+                event.preventDefault(); // Stop form submission
+                showGdprModal(); // Show GDPR modal
+            }
+        });
+    }
+});
+
+// // Attach event listener to prevent form submission if GDPR is unchecked
+// document.addEventListener("DOMContentLoaded", function () {
+//     const form = document.getElementById("submitForm");
+//     const submitButton = document.getElementById("submitBtn");
+
+//     submitButton.addEventListener("click", function (event) {
+//         if (!document.getElementById("gdprConsent").checked) {
+//             event.preventDefault(); // Stop form submission
+//             showGdprModal(); // Show GDPR modal
+//         }
+//     });
+
+// });
