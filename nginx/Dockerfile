@@ -2,6 +2,8 @@ FROM owasp/modsecurity-crs:4-nginx-202501270601
 
 USER root
 
+WORKDIR /etc/nginx/
+
 RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y openssl nano

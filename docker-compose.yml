@@ -23,6 +23,7 @@ services:
 
   db:
     image: postgres
+    container_name: database
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
@@ -38,6 +39,7 @@ services:
     build:
       context: ./back
       dockerfile: Dockerfile
+    container_name: backend
     restart: always
     volumes:
       - ./back:/back
@@ -76,9 +78,8 @@ services:
       - transcendence
 
   grafana:
-    image: grafana/grafana:latest
     container_name: grafana
-    restart: always
+    build: grafana
     ports:
       - "3000:3000"
     environment:
@@ -89,10 +90,11 @@ services:
       - transcendence
     volumes:
       - ./grafana/dashboards:/var/lib/grafana/dashboards/
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/provisioning:/etc/grafana/provisioning/
     depends_on:
       - prometheus
       - db
+    restart: always
 
   node_exporter:
     image: prom/node-exporter:latest
