@@ -2,7 +2,7 @@ import { updateTextForElem } from "../utils/languages.js";
 import { navigateTo } from '../index.js';
 import { BASE_URL } from '../index.js';
 import { isUserConnected } from "../utils/utils.js";
-import { validateUsername, validateEmail, validatePassword } from "../utils/validateInput.js";
+import { validateUsername, validateEmail } from "../utils/validateInput.js";
 
 // Function that will be called when the view is loaded
 export async function editProfile () {
@@ -16,7 +16,9 @@ export async function editProfile () {
 		profilePicture: false,
 		username: false,
 		email: false,
-		password: false
+		alias: false,
+		gdpr: false,
+
 	};
 
     // Get the form elements from the HTML
@@ -24,17 +26,22 @@ export async function editProfile () {
 	const avatarInputElem = document.getElementById('avatar-input');
 	const usernameElem = document.getElementById('username');
 	const emailElem = document.getElementById('email');
-	const passwordElem = document.getElementById('password');
+	//const passwordElem = document.getElementById('password');
+	const gdprElem = document.getElementById("gdpr");
+	const aliasElem = document.getElementById('alias');
+
 
 	const usernameErrorElem = document.getElementById('username-error');
 	const emailErrorElem = document.getElementById('email-error');
-	const passwordErrorElem = document.getElementById('password-error');
+	//const passwordErrorElem = document.getElementById('password-error');
+	const aliasErrorElem = document.getElementById('alias-error');
 	const avatarErrorElem = document.getElementById('avatar-error');
+	const gdprErrorElem = document.getElementById("gdprConsent-error");
 
 	// Add event listeners for when the user leaves the input fields
 	usernameElem.addEventListener('blur', () => validateUsername(usernameElem, usernameErrorElem));
 	emailElem.addEventListener('blur', () => validateEmail(emailElem, emailErrorElem));
-	passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
+	//passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
 
 	avatarInputElem.addEventListener('change', () => {
 		changes.profilePicture = true;
@@ -51,8 +58,11 @@ export async function editProfile () {
 	emailElem.addEventListener('change', () => {
 		changes.email = true;
 	});
-	passwordElem.addEventListener('change', () => {
-		changes.password = true;
+	aliasElem.addEventListener('change', () => {
+		changes.alias = true;
+	});
+	gdprElem.addEventListener("change", () => {
+		changes.gdpr = true;
 	});
 
 	// Add event listener for the submit button
@@ -79,6 +89,8 @@ export async function editProfile () {
 
 		usernameElem.value = user.username;
 		emailElem.value = user.email;
+		aliasElem.value = user.alias ? user.alias : '';  // Ensure it's not undefined or null
+		gdprElem.checked = Boolean(user.gdpr);
 	}
 
 	// Validates profile picture
@@ -117,8 +129,10 @@ export async function editProfile () {
 		}
 
 		if (!changesAvailable) {
+			window.location.href = '/profile'; // Change to your desired page
 			return;
 		}
+
 
 		// Data to be sent to the server
 		const formData = new FormData();
@@ -143,15 +157,25 @@ export async function editProfile () {
 			}
 			formData.append('email', emailElem.value);
 		}
-		if (changes.password) {
-			if (!validatePassword(passwordElem, passwordErrorElem)) {
-				formValid = false;
-			}
-			formData.append('password', passwordElem.value);
+		if (changes.alias) {
+			// if (!validatealias(aliasElem, aliasErrorElem)) {
+			// 	formValid = false;
+			// }
+			formData.append('alias', aliasElem.value);
+		}
+		if (changes.gdpr) {
+			console.log("GDPR Change Detected:", gdprElem.checked); // Debugging
+			formData.append("gdpr", gdprElem.checked ? "true" : "false"); // Send as string
 		}
 
+		// Log all data in FormData before submitting
+		// console.log("Form Data before submission:");
+		// formData.forEach((value, key) => {
+		// 	console.log(key + ":", value);
+		// });
+
 		if (formValid) {
-			// Send the data to the server
+			// Send the data to the servers
 			const response = await fetch(`${BASE_URL}/api/update_user`, {
 				method: 'PUT',
 				body: formData
@@ -159,18 +183,38 @@ export async function editProfile () {
 
 			// If the status is an error, show the error message in the correct fields
 			if (response.status === 400) {
-				// Get the response data into json
+				// Get the response data (errors)
 				const responseData = await response.json();
 
-				if (responseData.username) {
-					updateTextForElem(document.getElementById('username-error'), responseData.username[0]);
+				// Iterate over the fields in the response data
+				for (let field in responseData) {
+					const errorMessages = responseData[field].join(' ');
+					// Dynamically update the error message for the specific field
+					const errorElem = document.getElementById(`${field}-error`);
+					if (errorElem) {
+						updateTextForElem(errorElem, errorMessages);
+					}
 				}
-				if (responseData.email) {
-					updateTextForElem(document.getElementById('email-error'), responseData.email[0]);
-				}
-				if (responseData.password) {
-					updateTextForElem(document.getElementById('password-error'), responseData.password[0]);
-				}
+
+			// if (response.status === 400) {
+			// 	// Get the response data into json
+			// 	const responseData = await response.json();s
+
+			// 	if (responseData.username) {
+			// 		updateTextForElem(document.getElementById('username-error'), responseData.username[0]);
+			// 	}
+			// 	if (responseData.email) {
+			// 		updateTextForElem(document.getElementById('email-error'), responseData.email[0]);
+			// 	}
+			// 	// if (responseData.password) {
+			// 	// 	updateTextForElem(document.getElementById('password-error'), responseData.password[0]);
+			// 	// }
+			// 	if (responseData.alias) {
+			// 		updateTextForElem(document.getElementById('alias-error'), responseData.alias[0]);
+			// 	}
+			
+		
+		
 			} else if (response.status === 200) {
 				// If the response status is success, show success message and navigate to the login page
 				const containerEdit = document.querySelector('.container-edit');

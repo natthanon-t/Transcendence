@@ -58,7 +58,6 @@ export function signIn() {
 		});
 
 		// If there is an error
-	
 		if (response.status === 400) {
 			const responseData = await response.json();
 			// If the response status is an error, show the error message in the correct fields
@@ -85,12 +84,25 @@ export function signIn() {
 }
 
 export function showTwoFactorForm(username, password) {
-    // Show the 2FA form
-    document.getElementById("two-factor-section").style.display = "block";
-	document.getElementById("loginsection").style.display = "none";
-	
-	const verify2faButton = document.querySelector("#verify-2fa-button");
-    const twoFactorCodeElem = document.getElementById("twofactorcode");
+    // Hide the login form and show the 2FA input form
+    const containerLogin = document.querySelector('.container-login');
+    containerLogin.innerHTML = `
+        <div class="row justify-content-center mb-3">
+            <div class="col-12 text-left">
+                <label for="two-factor-code" class="text-white">Enter 2FA code:</label>
+                <input type="text" class="form-control text-center text-input" id="two-factor-code" maxlength="6">
+                <small class="text-danger" id="two-factor-error">&nbsp;</small>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-4">
+            <div class="col-12 text-center">
+                <button class="btn btn-lg text-light btn-filled" id="verify-2fa-button">Verify 2FA</button>
+            </div>
+        </div>
+    `;
+
+    const verify2faButton = document.querySelector("#verify-2fa-button");
+    const twoFactorCodeElem = document.getElementById("two-factor-code");
     const twoFactorErrorElem = document.getElementById("two-factor-error");
 
     verify2faButton.addEventListener("click", async (e) => {
@@ -103,17 +115,23 @@ export function showTwoFactorForm(username, password) {
             return;
         }
 
-        const data = { username, password, twoFactorCode };
+        const data = {
+            username,
+            password,
+            twoFactorCode
+        };
 
-        // Send 2FA code to the server for verification
+        // Send the 2FA code to the server
         const response = await fetch("/api/verify-2fa", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify(data),
         });
 
         if (response.status === 200) {
-            // If 2FA is successful, navigate to the profile page
+            // If 2FA is verified, navigate to the profile page
             navigateTo("/profile");
         } else {
             const responseData = await response.json();

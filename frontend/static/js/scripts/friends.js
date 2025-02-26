@@ -9,6 +9,12 @@ export async function friends () {
 		return;
 	}
 
+    // Make a call to the API to get all the users.
+	// The response will be a JSON array where each element is a user.
+	// Get the user-elements class element
+	// Map through the response array and add a child to the user-elements for each element of the array.
+	// If there are no users, display such a message.
+
 	// Get the container that contains all the individual user containers
 	const userElementsContainer = document.getElementById('user-elements');
 	const friendElementsContainer = document.getElementById('friend-elements');

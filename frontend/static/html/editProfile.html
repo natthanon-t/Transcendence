@@ -40,13 +40,25 @@
 				<small class="text-danger" id="email-error">&nbsp;</small>
 			</div>
 		</div>
-		<div class="row justify-content-center mb-3">
+		<!-- <div class="row justify-content-center mb-3">
 			<div class="col-12 text-left">
 				<label for="password" class="text-white" data-translate="password">password:</label>
 				<input type="password" class="form-control text-center text-input" id="password" maxlength="64">
 				<small class="text-danger" id="password-error">&nbsp;</small>
 			</div>
+		</div> -->
+		<div class="row justify-content-center mb-3">
+			<div class="col-12 text-left">
+				<label for="alias" class="text-white" data-translate="alias">alias:</label>
+				<input type="text" class="form-control text-center text-input" id="alias" maxlength="12">
+				<small class="text-danger" id="alias-error">&nbsp;</small>
+			</div>
 		</div>
+		<label>
+            <input type="checkbox" id="gdpr">
+            I agree to the GDPR policy
+			<small class="text-danger" id="gdprConsent-error">&nbsp;</small>
+        </label>
 		<div class="row justify-content-center mt-3">
 			<div class="col-12 text-center">
 				<button class="btn btn-lg text-light btn-filled" id="save-button" data-translate="save">save</button>

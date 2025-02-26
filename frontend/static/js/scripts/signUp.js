@@ -2,6 +2,7 @@ import { BASE_URL } from '../index.js';
 import { updateTextForElem } from '../utils/languages.js';
 import { navigateTo } from '../index.js';
 import { validateUsername, validateEmail, validatePassword } from '../utils/validateInput.js';
+import { showGdprModal } from '../utils/gdprModal.js';
 
 // Function that will be called when the view is loaded
 export function signUp () {
@@ -9,16 +10,16 @@ export function signUp () {
 	const usernameElem = document.getElementById('username');
 	const emailElem = document.getElementById('email');
 	const passwordElem = document.getElementById('password');
-	
+
 	const usernameErrorElem = document.getElementById('username-error');
 	const emailErrorElem = document.getElementById('email-error');
 	const passwordErrorElem = document.getElementById('password-error');
-	
+
 	// Add event listeners for when the user leaves the input fields
 	usernameElem.addEventListener('blur', () => validateUsername(usernameElem, usernameErrorElem));
 	emailElem.addEventListener('blur', () => validateEmail(emailElem, emailErrorElem));
 	passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
-	
+
 	// Add event listener for the submit button
 	const signUpButtonElem = document.getElementById('sign-up-button');
 	signUpButtonElem.addEventListener('click', submitForm);
@@ -27,11 +28,16 @@ export function signUp () {
 		// Prevent the default behavior of the form
 		e.preventDefault();
 
+		const gdprConsentChecked = document.getElementById('gdprConsent').checked;
 		// Make sure that all the fields are valid (at least front-end-wise)
 		const usernameValid = validateUsername(usernameElem, usernameErrorElem);
 		const emailValid = validateEmail(emailElem, emailErrorElem);
 		const passwordValid = validatePassword(passwordElem, passwordErrorElem);
 
+		if (!gdprConsentChecked) {
+			showGdprModal();
+			return;
+		}
 		// If all the fields are valid, send the data to the server
 		if (usernameValid && emailValid && passwordValid) {
 			const username = usernameElem.value;
@@ -99,4 +105,14 @@ export function signUp () {
 			}
 		}
 	};
+	 // GDPR ButtonshowGdprModal
+	 const gdprBtn = document.getElementById('gdpr-btn');
+	 gdprBtn.addEventListener('click', (event) => {
+		event.preventDefault(); // Prevents any default navigation or form reset
+		showGdprModal();
+	});
+
 }
+
+
+

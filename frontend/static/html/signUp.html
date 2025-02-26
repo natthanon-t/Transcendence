@@ -31,6 +31,16 @@
 				<small class="text-danger" id="password-error">&nbsp;</small>
 			</div>
 		</div>
+		<label>
+            <input type="checkbox" id="gdprConsent" name="gdprConsent">
+            I agree to the GDPR policy
+			<small class="text-danger" id="gdprConsent-error">&nbsp;</small>
+        </label>
+		<div class="row justify-content-center mt-3">
+			<div class="col-12 text-center">
+				<button class="btn btn-sm btn-outline-light" id="gdpr-btn">View GDPR Policy</button>
+			</div>
+		</div>
 		<div class="row justify-content-center mt-4">
 			<div class="col-12 text-center">
 				<button class="btn btn-lg text-light btn-filled" id="sign-up-button" data-translate="sign up">sign up</button>
@@ -41,6 +51,8 @@
 				<small class="light-text" data-translate="have account">have an account?</small> <small> <a href="/signin" class="text-light sign" data-link data-translate="login">login</a></small>
 			</div>
 		</div>
+
+
     </form>
 	<a role="button" class="return-btn btn btn-lg text-light text-center d-flex align-items-center justify-content-center p-3 mt-5" href="/" data-link>
 		<img src="static/assets/UI/icons/setting.svg" alt="setting button" id="setting">
