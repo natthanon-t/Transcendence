@@ -1,17 +1,20 @@
-FROM nginx:1.18.0
+FROM owasp/modsecurity-crs:4-nginx-202502051002
 
-# ติดตั้ง ModSecurity
-RUN apt-get update && apt-get install -y \
-    libmodsecurity3 \
-    libmodsecurity-dev \
-    && rm -rf /var/lib/apt/lists/*
+USER root
 
-# ตั้งค่า ModSecurity
-COPY modsecurity.conf /etc/nginx/modsec/modsecurity.conf
-COPY modsec-nginx.conf /etc/nginx/modsec-nginx.conf
+WORKDIR /etc/nginx/
 
-# ติดตั้งไฟล์ nginx.conf สำหรับ Nginx
-COPY nginx.conf /etc/nginx/nginx.conf
+RUN apt-get update && apt-get upgrade -y
 
-# ตั้งค่าไฟล์เซอร์วิส Nginx
-RUN ln -s /etc/nginx/modsec/modsecurity.conf /etc/nginx/modsecurity.conf
+RUN apt-get install -y openssl nano
+
+#RUN mkdir -p /etc/nginx/ssl
+
+#RUN openssl req -x509 -nodes -out /etc/nginx/ssl/transcendence.crt -keyout /etc/nginx/ssl/transcendence.key -subj "/CN=localhost"
+#RUN chmod 777 /etc/nginx/ssl/transcendence.crt /etc/nginx/ssl/transcendence.key 
+COPY default.conf /etc/nginx/templates/conf.d/default.conf.template
+COPY modsecurity.conf /etc/nginx/templates/conf.d/modsecurity.conf
+
+USER nginx
+
+CMD ["nginx", "-g", "daemon off;"]

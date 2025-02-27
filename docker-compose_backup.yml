@@ -15,7 +15,6 @@ services:
     volumes:
       - ./frontend:/usr/share/nginx/html
       - media_volume:/usr/share/nginx/html/media
-      - ./logs/nginx:/logs/nginx   # Mount logs directory for ELK
     depends_on:
       - web
     networks:
@@ -23,7 +22,6 @@ services:
 
   db:
     image: postgres
-    container_name: database
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
@@ -39,12 +37,10 @@ services:
     build:
       context: ./back
       dockerfile: Dockerfile
-    container_name: backend
     restart: always
     volumes:
       - ./back:/back
       - media_volume:/back/transcendence/media
-      - ./logs/django:/logs/django   # Mount logs directory for ELK
     ports:
       - "8000:8000"
     depends_on:
@@ -78,8 +74,9 @@ services:
       - transcendence
 
   grafana:
+    image: grafana/grafana:latest
     container_name: grafana
-    build: grafana
+    restart: always
     ports:
       - "3000:3000"
     environment:
@@ -90,11 +87,10 @@ services:
       - transcendence
     volumes:
       - ./grafana/dashboards:/var/lib/grafana/dashboards/
-      - ./grafana/provisioning:/etc/grafana/provisioning/
+      - ./grafana/provisioning:/etc/grafana/provisioning
     depends_on:
       - prometheus
       - db
-    restart: always
 
   node_exporter:
     image: prom/node-exporter:latest
@@ -117,71 +113,6 @@ services:
       - transcendence
     depends_on:
       - db
-
-  nginx_exporter:
-    image: nginx/nginx-prometheus-exporter:latest
-    container_name: nginx_exporter
-    ports:
-      - "9113:9113"
-    command:
-    - '--nginx.scrape-uri=https://nginx:8443/status'
-    networks:
-      - transcendence
-    depends_on:
-      - nginx
-
-  #elasticsearch:
-  #  image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
-  #  container_name: elasticsearch
-  #  environment:
-  #    - discovery.type=single-node  # This is required for single-node setups
-  #    - ELASTIC_PASSWORD=testpass #${ELASTIC_PASSWORD}  # Set your Elasticsearch password
-  #  volumes:
-  #    - esdata:/usr/share/elasticsearch/data  # Persistent volume for Elasticsearch data
-  #  ports:
-  #    - "9200:9200"  # Expose the port for accessing Elasticsearch's API
-  #  networks:
-  #    - transcendence
-
-  #logstash:
-  #  image: docker.elastic.co/logstash/logstash:7.10.0
-  #  container_name: logstash
-  #  environment:
-  #    - LOGSTASH_PASSWORD=testpass  # Set password for Logstash if needed
-  #  volumes:
-  #    - ./logstash/config:/usr/share/logstash/config  # Mount config files (including pipelines.yml)
-  #    - ./logstash/pipeline:/usr/share/logstash/pipeline  # Mount pipeline configuration files (like logstash.conf)
-  #  ports:
-  #    - "5044:5044"  # Default port for Logstash input (Beats)
-  #  networks:
-  #    - transcendence
-  #  depends_on:
-  #    - elasticsearch
-  #kibana:
-  #  image: docker.elastic.co/kibana/kibana:7.10.0
-  #  container_name: kibana
-  #  environment:
-  #    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #    - ELASTICSEARCH_PASSWORD=testpass #${ELASTIC_PASSWORD}
-  #  ports:
-  #    - "5601:5601"  # Expose Kibana's web interface
-  #  networks:
-  #    - transcendence
-  #  depends_on:
-  #    - elasticsearch
-    
-  #filebeat:
-  #  image: docker.elastic.co/beats/filebeat:7.10.0
-  #  container_name: filebeat
-  #  volumes:
-  #    - ./filebeat/filebeat.yml:/etc/filebeat/filebeat.yml  # Mount custom Filebeat configuration
-  #    - ./path/to/logs:/path/to/your/logs  # Mount logs directory
-  #  networks:
-  #    - transcendence
-  #  depends_on:
-  #    - logstash
-
+      
 volumes:
   media_volume:
-  esdata:
-    driver: local

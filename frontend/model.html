@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDPR Modal</title> 
+</head>
+<body>
+
+    <!-- GDPR Popup Button -->
+    <button onclick="showGDPRModal()">Show GDPR Details</button>
+
+    <!-- GDPR Modal -->
+    <div id="gdprModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeGDPRModal()">&times;</span>
+            <h2>GDPR Compliance</h2>
+            <p>
+                We value your privacy. By using our services, you agree to our data processing policies under GDPR regulations.
+            </p>
+            <button class="accept-btn" onclick="closeGDPRModal()">Accept</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to show the GDPR modal
+        function showGDPRModal() {
+            document.getElementById("gdprModal").style.display = "block";
+        }
+
+        // Function to close the GDPR modal
+        function closeGDPRModal() {
+            document.getElementById("gdprModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside of the content box
+        window.onclick = function(event) {
+            let modal = document.getElementById("gdprModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    </script>
+
+</body>
+</html>

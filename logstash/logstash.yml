@@ -1,0 +1,5 @@
+path.data: /usr/share/logstash/data
+path.logs: /usr/share/logstash/logs
+pipeline.id: main
+pipeline.batch.size: 125
+pipeline.batch.delay: 5
