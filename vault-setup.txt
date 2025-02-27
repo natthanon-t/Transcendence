@@ -1,0 +1,106 @@
+To pull data (e.g., a JWT secret) from a HashiCorp Vault container in a Django application, you'll need to interact with Vault's API to retrieve the secret. Here's a step-by-step guide to do that:
+
+### 1. **Set Up Vault and Store the JWT Secret**
+Ensure that your Vault container is running and that you've stored the JWT secret in Vault. You can store secrets in Vault using the following commands:
+
+#### Example: Storing JWT Secret in Vault
+```bash
+# First, make sure you're inside the Vault container or have access to it
+docker exec -it <vault_container_id> /bin/sh
+
+# Authenticate with Vault (using root token for simplicity, but for production, you should use a proper auth method)
+vault login <your_root_token>
+
+# Store the JWT secret
+vault kv put secret/jwt/secret key=<your_jwt_secret>
+```
+
+### 2. **Install Required Libraries in Django**
+
+In your Django project, you will need a few Python libraries to interact with Vault:
+
+- `hvac`: HashiCorp Vault's Python client.
+  
+Install `hvac` using `pip`:
+
+```bash
+pip install hvac
+```
+
+### 3. **Configure Django to Pull Data from Vault**
+
+In your Django application, you'll need to interact with Vault's API to retrieve the JWT secret.
+
+#### Example: Fetching JWT Secret from Vault in Django
+
+1. **Create a function to interact with Vault API:**
+
+   Create a utility function to pull the JWT secret from Vault.
+
+```python
+import hvac
+import os
+
+# Vault URL and authentication settings
+VAULT_URL = 'http://127.0.0.1:8200'  # Update this if Vault is running in a different container or server
+VAULT_TOKEN = os.getenv('VAULT_TOKEN', '<your_vault_token>')  # Optionally, set this environment variable for security
+
+client = hvac.Client(url=VAULT_URL, token=VAULT_TOKEN)
+
+def get_jwt_secret():
+    try:
+        # Fetch the secret from Vault (from the path where it's stored)
+        secret = client.secrets.kv.read_secret_version(path='secret/jwt/secret')
+        jwt_secret = secret['data']['data']['key']  # 'key' is the field name used to store the JWT secret
+        return jwt_secret
+    except Exception as e:
+        print(f"Error fetching JWT secret from Vault: {e}")
+        return None
+```
+
+2. **Use the function in your Django views or settings:**
+
+Now, you can use the `get_jwt_secret()` function wherever you need to access the JWT secret. For example, in a view or a settings file:
+
+```python
+from django.http import JsonResponse
+from .vault_utils import get_jwt_secret
+
+def some_view(request):
+    jwt_secret = get_jwt_secret()
+    if jwt_secret:
+        return JsonResponse({'jwt_secret': jwt_secret})
+    else:
+        return JsonResponse({'error': 'Unable to retrieve JWT secret'}, status=500)
+```
+
+### 4. **Ensure Vault is Accessible from Django**
+
+- Make sure that the Vault container is accessible from your Django application, either by using Docker networking or other methods.
+- If Django is running in Docker as well, ensure both containers are on the same network (`docker network`).
+
+If your Vault container is running on a different host or port, update the `VAULT_URL` accordingly.
+
+### 5. **Environment Variable for Token (Optional but Recommended)**
+
+For security, it's a good practice not to hardcode your Vault token in the code. Instead, you can store the Vault token in an environment variable. You can set the environment variable in your system or use a `.env` file (using `django-environ`).
+
+Example:
+
+```bash
+export VAULT_TOKEN=<your_vault_token>
+```
+
+In Django settings:
+
+```python
+import os
+
+VAULT_TOKEN = os.getenv('VAULT_TOKEN')
+```
+
+### Final Notes:
+
+- **Security**: Never expose your Vault token in your source code. Use environment variables, Kubernetes secrets, or a more secure method for handling tokens.
+- **Authentication**: For production, consider using Vault's more secure authentication methods, like AppRole or Kubernetes auth.
+- **Error Handling**: Ensure that the code gracefully handles errors such as network failures or invalid responses from Vault.
