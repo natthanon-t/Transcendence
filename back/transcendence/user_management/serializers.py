@@ -76,3 +76,35 @@ class CustomUserSerializer(serializers.ModelSerializer):
 				return None  # Stop execution and return immediately
 		instance.save()
 		return instance
+
+### TOURNAMENT ###
+from rest_framework import serializers
+from .models import Tournament, TournamentPlayer, TournamentMatch
+
+class TournamentPlayerSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TournamentPlayer
+        fields = ['id', 'username', 'guest_name', 'eliminated', 'position']
+    
+    def get_username(self, obj):
+        return obj.user.username if obj.user else None
+
+class TournamentMatchSerializer(serializers.ModelSerializer):
+    player1 = TournamentPlayerSerializer()
+    player2 = TournamentPlayerSerializer()
+    winner = TournamentPlayerSerializer()
+    
+    class Meta:
+        model = TournamentMatch
+        fields = ['id', 'player1', 'player2', 'winner', 'round_number', 
+                 'match_number', 'completed', 'player1_score', 'player2_score']
+
+class TournamentSerializer(serializers.ModelSerializer):
+    players = TournamentPlayerSerializer(many=True, read_only=True)
+    matches = TournamentMatchSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Tournament
+        fields = ['id', 'creator', 'created_at', 'status', 'players', 'matches']

@@ -53,3 +53,34 @@ class CustomUser(AbstractUser):
 
 	def __str__(self):
 		return self.username
+
+#### TOURNAMENT ####
+class Tournament(models.Model):
+    creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='created_tournaments')
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=[
+        ('PENDING', 'Pending'),
+        ('IN_PROGRESS', 'In Progress'),
+        ('COMPLETED', 'Completed')
+    ], default='PENDING')
+
+class TournamentPlayer(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='players')
+    user = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, null=True, blank=True)
+    guest_name = models.CharField(max_length=50, null=True, blank=True)
+    eliminated = models.BooleanField(default=False)
+    position = models.IntegerField(default=0)  # For bracket positioning
+
+    class Meta:
+        unique_together = [['tournament', 'user'], ['tournament', 'guest_name']]
+
+class TournamentMatch(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='matches')
+    player1 = models.ForeignKey(TournamentPlayer, on_delete=models.CASCADE, null=True, blank=True, related_name='matches_as_player1') # Added null=True, blank=True
+    player2 = models.ForeignKey(TournamentPlayer, on_delete=models.CASCADE, null=True, blank=True, related_name='matches_as_player2') # Added null=True, blank=True
+    winner = models.ForeignKey(TournamentPlayer, on_delete=models.CASCADE, null=True, blank=True, related_name='matches_won')
+    round_number = models.IntegerField()
+    match_number = models.IntegerField()
+    completed = models.BooleanField(default=False)
+    player1_score = models.IntegerField(default=0)
+    player2_score = models.IntegerField(default=0)

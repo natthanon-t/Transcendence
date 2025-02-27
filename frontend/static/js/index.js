@@ -9,6 +9,8 @@ import EditProfile from "./views/EditProfile.js";
 import Startpage from "./views/Start.js";
 import Friends from "./views/Friends.js";
 import resetpass from "./views/resetpass.js";
+import TournamentSetup from "./views/tournamentSetup.js";
+import TournamentMatch from "./views/tournamentMatch.js";
 
 // ------------------------------- IMPORT UTILS ---------------------------------
 import { updateTexts } from "./utils/languages.js";
@@ -52,6 +54,8 @@ const routes = [
 	{ path: "/selectgame", view: selectgame},
 	{ path: "/tdgame", view: tdgame},
 	{ path: "/tournamentgame", view: tournamentgame},
+	{ path: "/tournamentsetup", view: TournamentSetup },
+	{ path: "/tournamentMatch", view: TournamentMatch },
 	{ path: "/friends", view: Friends },
 	{ path: "/resetpass", view: resetpass }
 	

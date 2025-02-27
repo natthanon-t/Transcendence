@@ -18,5 +18,10 @@ urlpatterns = [
     re_path("auth/42/callback/", FortyTwoOAuthCallback.as_view(), name="fortytwo-callback"),
     re_path("resetpass", ResetPasswordRequestView.as_view()),
     re_path("verify-otp-reset-password", VerifyOTPResetPasswordView.as_view()),
+	re_path(r'api/tournament/create/', CreateTournament.as_view()),
+    re_path(r'api/tournament/match/(?P<match_id>\d+)/update/', UpdateTournamentMatch.as_view()),
+    re_path(r'api/tournament/(?P<tournament_id>\d+)/matches/', TournamentMatches.as_view()),
+    re_path(r'api/tournament/match/(?P<match_id>\d+)/', TournamentMatchDetail.as_view()),
+	re_path(r'api/check_user_exists/', CheckUserExists.as_view(), name='check-user-exists'),
     
 	]
