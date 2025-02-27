@@ -22,14 +22,13 @@ services:
       - transcendence
 
   db:
-    image: postgres
+    build: database
     container_name: database
     volumes:
       - ./data/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - shared-data:/vault/token/
+    depends_on:
+      - vault
     ports:
       - "5432:5432"
     networks:
@@ -49,6 +48,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - vault
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -64,8 +64,31 @@ services:
     restart: always
     ports:
       - 8080:8080
+    depends_on:
+      - db
     networks:
       - transcendence
+  
+  vault:
+    build: ./vault
+    container_name: vault
+    restart: unless-stopped
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_ADDR: "http://localhost:8200"
+    env_file:
+      - ${PWD}/.env
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./vault/data:/vault/data"
+      - shared-data:/vault/token/
+    networks:
+      transcendence:
+        aliases:
+          - vault
+
   #prometheus:
   #  image: prom/prometheus:latest
   #  container_name: prometheus
@@ -185,3 +208,4 @@ volumes:
   media_volume:
   esdata:
     driver: local
+  shared-data:
