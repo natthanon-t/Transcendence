@@ -11,6 +11,8 @@ import Friends from "./views/Friends.js";
 import resetpass from "./views/resetpass.js";
 import TournamentSetup from "./views/tournamentSetup.js";
 import TournamentMatch from "./views/tournamentMatch.js";
+import UserHistory from "./views/UserHistory.js";
+
 
 // ------------------------------- IMPORT UTILS ---------------------------------
 import { updateTexts } from "./utils/languages.js";
@@ -57,10 +59,10 @@ const routes = [
 	{ path: "/tournamentsetup", view: TournamentSetup },
 	{ path: "/tournamentMatch", view: TournamentMatch },
 	{ path: "/friends", view: Friends },
-	{ path: "/resetpass", view: resetpass }
+	{ path: "/resetpass", view: resetpass },
+	{ path: "/match-history", view: UserHistory }
 	
 
-	
 	// { path: "/auth", view: auth }
 ];
 

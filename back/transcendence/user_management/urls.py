@@ -23,5 +23,6 @@ urlpatterns = [
     re_path(r'api/tournament/(?P<tournament_id>\d+)/matches/', TournamentMatches.as_view()),
     re_path(r'api/tournament/match/(?P<match_id>\d+)/', TournamentMatchDetail.as_view()),
 	re_path(r'api/check_user_exists/', CheckUserExists.as_view(), name='check-user-exists'),
-    
+    re_path(r'api/user_match_history/', UserMatchHistory.as_view(), name='user-match-history'),
+
 	]

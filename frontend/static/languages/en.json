@@ -69,5 +69,7 @@
 	"friends": "Friends",
 	"all users": "All Users",
 	"no users": "No users found",
-	"no friends": "No friends found"
+	"no friends": "No friends found",
+
+	"match-history": "Match History"
 }

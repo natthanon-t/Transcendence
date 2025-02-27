@@ -219,7 +219,7 @@ export default class extends AbstractView {
     
     getPlayerName(player) {
         if (!player) return 'Unknown';
-        return player.user?.username || player.guest_name || 'Player';
+        return player.username || player.guest_name || 'Player';
     }
     
 	async submitMatchResult() {

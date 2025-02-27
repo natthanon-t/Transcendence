@@ -321,7 +321,7 @@ export default class extends AbstractView {
         element.className = `player p-2 ${isWinner ? 'winner' : ''}`;
         
         if (player) {
-            element.textContent = player.user?.username || player.guest_name || 'Unknown';
+            element.textContent = player.username || player.guest_name || 'Unknown';
         } else {
             element.textContent = 'TBD';
             element.classList.add('text-muted');
@@ -353,7 +353,7 @@ export default class extends AbstractView {
 		
 		if (completedFinal) {
 			// Tournament is complete - show winner
-			const winnerName = completedFinal.winner.user?.username || completedFinal.winner.guest_name || "Unknown";
+			const winnerName = completedFinal.winner.username || completedFinal.winner.guest_name || "Unknown";
 			
 			matchInfoElement.innerHTML = `
 				<div class="alert alert-success">
@@ -394,8 +394,8 @@ export default class extends AbstractView {
 			playableMatches.sort((a, b) => a.round_number - b.round_number);
 			
 			const nextMatch = playableMatches[0];
-			const player1Name = nextMatch.player1.user?.username || nextMatch.player1.guest_name || "Unknown";
-			const player2Name = nextMatch.player2.user?.username || nextMatch.player2.guest_name || "Unknown";
+			const player1Name = nextMatch.player1.username || nextMatch.player1.guest_name || "Unknown";
+			const player2Name = nextMatch.player2.username || nextMatch.player2.guest_name || "Unknown";
 			
 			matchInfoElement.innerHTML = `
 				<div class="alert alert-info">
@@ -444,7 +444,7 @@ export default class extends AbstractView {
 			if (matchesWithOnlyPlayer1.length > 0) {
 				// This is likely a final match with bye player waiting for an opponent
 				const match = matchesWithOnlyPlayer1[0];
-				const playerName = match.player1.user?.username || match.player1.guest_name || "Unknown";
+				const playerName = match.player1.username || match.player1.guest_name || "Unknown";
 				
 				matchInfoElement.innerHTML = `
 					<div class="alert alert-info">
@@ -483,9 +483,9 @@ export default class extends AbstractView {
 		if (match.completed) {
 			if (match.player1 && match.player2) {
 				// Regular completed match
-				const player1Name = match.player1.user?.username || match.player1.guest_name || "Unknown";
-				const player2Name = match.player2.user?.username || match.player2.guest_name || "Unknown";
-				const winnerName = match.winner.user?.username || match.winner.guest_name || "Unknown";
+				const player1Name = match.player1.username || match.player1.guest_name || "Unknown";
+				const player2Name = match.player2.username || match.player2.guest_name || "Unknown";
+				const winnerName = match.winner.username || match.winner.guest_name || "Unknown";
 				
 				matchInfoElement.innerHTML = `
 					<div class="alert alert-secondary">
@@ -496,7 +496,7 @@ export default class extends AbstractView {
 				`;
 			} else if (match.player1 && !match.player2 && match.round_number === 1) {
 				// First round bye
-				const playerName = match.player1.user?.username || match.player1.guest_name || "Unknown";
+				const playerName = match.player1.username || match.player1.guest_name || "Unknown";
 				
 				matchInfoElement.innerHTML = `
 					<div class="alert alert-secondary">
@@ -534,8 +534,8 @@ export default class extends AbstractView {
 		// Store the selected match
 		this.selectedMatch = match;
 		
-		const player1Name = match.player1.user?.username || match.player1.guest_name || "Unknown";
-		const player2Name = match.player2.user?.username || match.player2.guest_name || "Unknown";
+		const player1Name = match.player1.username || match.player1.guest_name || "Unknown";
+		const player2Name = match.player2.username || match.player2.guest_name || "Unknown";
 		
 		matchInfoElement.innerHTML = `
 			<div class="alert alert-primary">

@@ -479,7 +479,7 @@ export class TournamentBracket extends HTMLElement {
 		element.className = `player p-2 ${isWinner ? 'winner' : ''}`;
 		
 		if (player) {
-			element.textContent = player.user?.username || player.guest_name || 'Player';
+			element.textContent = player.username || player.guest_name || 'Player';
 		} else {
 			element.textContent = 'TBD';
 			element.classList.add('text-muted');
