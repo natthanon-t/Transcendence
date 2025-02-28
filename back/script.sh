@@ -5,9 +5,16 @@ while ! nc -z db 5432; do
 	sleep 1
 done
 
-sleep 5
+if [ -s /vault/token/root_token.txt ]; then
+    echo "Root token found"
+else
+    echo "Root token not found"
+    exit 1
+fi
 
-python transcendence/manage.py makemigrations
+sleep 10
+
+python transcendence/manage.py makemigrations user_management
 python transcendence/manage.py migrate
 
 echo "Starting server..."
