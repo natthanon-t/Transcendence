@@ -367,7 +367,7 @@ class Verify2FA(views.APIView):
             token, created = Token.objects.get_or_create(user=user)
             serializer = CustomUserSerializer(instance=user)
             response = Response(status=status.HTTP_200_OK)
-            response.set_cookie(key='jwt', value=token.key, httponly=True, secure=True ,max_age=200)
+            response.set_cookie(key='jwt', value=token.key, httponly=True, secure=True ,max_age=86400)
             return response
             #return Response({'message': '2FA verified successfully'}, status=status.HTTP_200_OK)
         else:
@@ -964,67 +964,67 @@ class CheckUserExists(APIView):
         return Response({"exists": exists})
 
 ### MATCH HISTORY ###
-class RecordMatchHistory(APIView):
-    authentication_classes = [CookieTokenAuthentication]
-    permission_classes = [IsAuthenticated]
+# class RecordMatchHistory(APIView):
+#     authentication_classes = [CookieTokenAuthentication]
+#     permission_classes = [IsAuthenticated]
     
-    def post(self, request):
-        match_type = request.data.get('match_type')
-        player1_id = request.data.get('player1_id')
-        player2_id = request.data.get('player2_id')
-        winner_id = request.data.get('winner_id')
-        player1_score = request.data.get('player1_score')
-        player2_score = request.data.get('player2_score')
-        player1_guest_name = request.data.get('player1_guest_name')
-        player2_guest_name = request.data.get('player2_guest_name')
-        winner_guest_name = request.data.get('winner_guest_name')
+#     def post(self, request):
+#         match_type = request.data.get('match_type')
+#         player1_id = request.data.get('player1_id')
+#         player2_id = request.data.get('player2_id')
+#         winner_id = request.data.get('winner_id')
+#         player1_score = request.data.get('player1_score')
+#         player2_score = request.data.get('player2_score')
+#         player1_guest_name = request.data.get('player1_guest_name')
+#         player2_guest_name = request.data.get('player2_guest_name')
+#         winner_guest_name = request.data.get('winner_guest_name')
         
-        match_data = {
-            'match_type': match_type,
-            'player1_score': player1_score,
-            'player2_score': player2_score,
-            'player1_guest_name': player1_guest_name,
-            'player2_guest_name': player2_guest_name,
-            'winner_guest_name': winner_guest_name,
-        }
+#         match_data = {
+#             'match_type': match_type,
+#             'player1_score': player1_score,
+#             'player2_score': player2_score,
+#             'player1_guest_name': player1_guest_name,
+#             'player2_guest_name': player2_guest_name,
+#             'winner_guest_name': winner_guest_name,
+#         }
         
-        # Set registered user players if provided
-        if player1_id:
-            try:
-                match_data['player1'] = CustomUser.objects.get(id=player1_id)
-            except CustomUser.DoesNotExist:
-                return Response({"error": f"User with ID {player1_id} not found"}, status=400)
+#         # Set registered user players if provided
+#         if player1_id:
+#             try:
+#                 match_data['player1'] = CustomUser.objects.get(id=player1_id)
+#             except CustomUser.DoesNotExist:
+#                 return Response({"error": f"User with ID {player1_id} not found"}, status=400)
                 
-        if player2_id:
-            try:
-                match_data['player2'] = CustomUser.objects.get(id=player2_id)
-            except CustomUser.DoesNotExist:
-                return Response({"error": f"User with ID {player2_id} not found"}, status=400)
+#         if player2_id:
+#             try:
+#                 match_data['player2'] = CustomUser.objects.get(id=player2_id)
+#             except CustomUser.DoesNotExist:
+#                 return Response({"error": f"User with ID {player2_id} not found"}, status=400)
                 
-        if winner_id:
-            try:
-                match_data['winner'] = CustomUser.objects.get(id=winner_id)
-            except CustomUser.DoesNotExist:
-                return Response({"error": f"User with ID {winner_id} not found"}, status=400)
+#         if winner_id:
+#             try:
+#                 match_data['winner'] = CustomUser.objects.get(id=winner_id)
+#             except CustomUser.DoesNotExist:
+#                 return Response({"error": f"User with ID {winner_id} not found"}, status=400)
             
-        # Add tournament data if applicable
-        if match_type == 'TOURNAMENT':
-            tournament_id = request.data.get('tournament_id')
-            round_number = request.data.get('round')
+#         # Add tournament data if applicable
+#         if match_type == 'TOURNAMENT':
+#             tournament_id = request.data.get('tournament_id')
+#             round_number = request.data.get('round')
             
-            if tournament_id:
-                try:
-                    match_data['tournament'] = Tournament.objects.get(id=tournament_id)
-                    match_data['tournament_round'] = round_number
-                except Tournament.DoesNotExist:
-                    return Response({"error": f"Tournament not found"}, status=400)
+#             if tournament_id:
+#                 try:
+#                     match_data['tournament'] = Tournament.objects.get(id=tournament_id)
+#                     match_data['tournament_round'] = round_number
+#                 except Tournament.DoesNotExist:
+#                     return Response({"error": f"Tournament not found"}, status=400)
         
-        try:
-            # Create the match history record
-            MatchHistory.objects.create(**match_data)
-            return Response({"status": "Match recorded successfully"}, status=200)
-        except Exception as e:
-            return Response({"error": str(e)}, status=400)
+#         try:
+#             # Create the match history record
+#             MatchHistory.objects.create(**match_data)
+#             return Response({"status": "Match recorded successfully"}, status=200)
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=400)
 
 class UserMatchHistory(APIView):
     authentication_classes = [CookieTokenAuthentication]
@@ -1040,3 +1040,85 @@ class UserMatchHistory(APIView):
         
         serializer = MatchHistorySerializer(matches, many=True)
         return Response(serializer.data)
+    
+class RecordMatchView(APIView):
+    """
+    API endpoint to record match results for both tournament and 1v1 matches
+    """
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        match_type = request.data.get('match_type', 'FRIENDLY')
+        player1_id = request.data.get('player1_id')
+        player2_id = request.data.get('player2_id')
+        player1_guest_name = request.data.get('player1_guest_name')
+        player2_guest_name = request.data.get('player2_guest_name')
+        player1_score = request.data.get('player1_score')
+        player2_score = request.data.get('player2_score')
+        winner_id = request.data.get('winner_id')
+        winner_guest_name = request.data.get('winner_guest_name')
+        
+        # Validate required fields
+        if player1_score is None or player2_score is None:
+            return Response({"error": "Player scores are required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if not ((player1_id or player1_guest_name) and (player2_id or player2_guest_name)):
+            return Response({"error": "Both players must be specified"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if not (winner_id or winner_guest_name):
+            return Response({"error": "Winner must be specified"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Prepare match data
+        match_data = {
+            'match_type': match_type,
+            'player1_score': player1_score,
+            'player2_score': player2_score,
+            'player1_guest_name': player1_guest_name,
+            'player2_guest_name': player2_guest_name,
+            'winner_guest_name': winner_guest_name,
+        }
+        
+        # Set player objects if IDs are provided
+        if player1_id:
+            try:
+                match_data['player1'] = CustomUser.objects.get(id=player1_id)
+            except CustomUser.DoesNotExist:
+                return Response({"error": f"User with ID {player1_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+                
+        if player2_id:
+            try:
+                match_data['player2'] = CustomUser.objects.get(id=player2_id)
+            except CustomUser.DoesNotExist:
+                return Response({"error": f"User with ID {player2_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+                
+        if winner_id:
+            try:
+                match_data['winner'] = CustomUser.objects.get(id=winner_id)
+            except CustomUser.DoesNotExist:
+                return Response({"error": f"User with ID {winner_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Add tournament data if applicable
+        if match_type == 'TOURNAMENT':
+            tournament_id = request.data.get('tournament_id')
+            tournament_round = request.data.get('tournament_round')
+            
+            if tournament_id:
+                try:
+                    match_data['tournament'] = Tournament.objects.get(id=tournament_id)
+                    if tournament_round:
+                        match_data['tournament_round'] = tournament_round
+                except Tournament.DoesNotExist:
+                    return Response({"error": f"Tournament not found"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Create the match history record
+            match = MatchHistory.objects.create(**match_data)
+            return Response({
+                "status": "success",
+                "message": "Match recorded successfully",
+                "match_id": match.id
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error(f"Error recording match: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
