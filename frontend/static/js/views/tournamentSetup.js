@@ -1,189 +1,3 @@
-// // static/js/views/TournamentSetup.js
-// import AbstractView from "./AbstractView.js";
-
-// export default class extends AbstractView {
-//     constructor() {
-//         super();
-//         this.setTitle("42_group - Tournament Setup");
-//         this.players = [];
-//     }
-    
-//     async getHtml() {
-//         return (await fetch("static/html/tournamentSetup.html")).text();
-//     }
-    
-//     loadJS() {
-//         // Call the afterRender method to set up event listeners
-//         this.afterRender();
-//     }
-    
-// 	async afterRender() {
-// 		console.log("Tournament setup view rendered");
-		
-// 		// Get all required DOM elements
-// 		const addPlayerBtn = document.getElementById('add-player');
-// 		const playersList = document.getElementById('players-list');
-// 		const startTournamentBtn = document.getElementById('start-tournament');
-// 		const playerNameInput = document.getElementById('player-name');
-// 		const playerTypeSelect = document.getElementById('player-type');
-// 		const cancelBtn = document.getElementById('cancel-setup');
-		
-// 		// Set initial state of start button
-// 		if (startTournamentBtn) {
-// 			startTournamentBtn.disabled = this.players.length < 3;
-// 		}
-		
-// 		// Handle Cancel button
-// 		if (cancelBtn) {
-// 			cancelBtn.addEventListener('click', () => {
-// 				window.location.href = '/selectgame';
-// 			});
-// 		}
-		
-// 		// Debug: Log DOM elements
-// 		console.log({
-// 			addPlayerBtn,
-// 			playersList,
-// 			startTournamentBtn,
-// 			playerNameInput,
-// 			playerTypeSelect,
-// 			cancelBtn
-// 		});
-		
-// 		// Add player to the tournament
-// 		if (addPlayerBtn) {
-// 			addPlayerBtn.addEventListener('click', async () => {
-// 				console.log("Add button clicked!");
-// 				const name = playerNameInput.value.trim();
-// 				const type = playerTypeSelect.value;
-				
-// 				if (!name) {
-// 					return; // Don't add empty names
-// 				}
-				
-// 				// Check if user exists code...
-// 				// [Your existing user validation code here]
-				
-// 				if (this.players.length < 8) {
-// 					this.players.push({
-// 						name: name,
-// 						type: type
-// 					});
-// 					console.log("Players array:", this.players);
-// 					this.updatePlayersList();
-// 					playerNameInput.value = '';
-					
-// 					// Update start button state
-// 					if (startTournamentBtn) {
-// 						startTournamentBtn.disabled = this.players.length < 3;
-// 					}
-// 				} else {
-// 					console.log("Cannot add player. Max players reached.");
-// 				}
-// 			});
-// 		}
-		
-// 		// Start tournament button - MOVE THIS OUTSIDE the add player event listener
-// 		if (startTournamentBtn) {
-// 			startTournamentBtn.addEventListener('click', async () => {
-// 				try {
-// 					console.log("Begin tournament clicked");
-					
-// 					if (this.players.length < 3) {
-// 						alert("You need at least 3 players to start a tournament");
-// 						return;
-// 					}
-					
-// 					const formattedPlayers = this.players.map(player => {
-// 						if (player.type === 'user') {
-// 							return {
-// 								type: 'user',
-// 								username: player.name
-// 							};
-// 						} else {
-// 							return {
-// 								type: 'guest',
-// 								name: player.name
-// 							};
-// 						}
-// 					});
-					
-// 					console.log("Sending tournament data:", formattedPlayers);
-					
-// 					const response = await fetch('/api/tournament/create/', {
-// 						method: 'POST',
-// 						headers: {
-// 							'Content-Type': 'application/json',
-// 						},
-// 						body: JSON.stringify({ players: formattedPlayers }),
-// 						credentials: 'include'
-// 					});
-					
-// 					if (!response.ok) {
-// 						const text = await response.text();
-// 						console.error('Failed to create tournament:', text);
-// 						throw new Error(`Failed to create tournament: ${response.status}`);
-// 					}
-					
-// 					const data = await response.json();
-// 					console.log("Tournament created successfully:", data);
-					
-// 					// Navigate to the tournament management page
-// 					window.location.href = `/tournamentgame?id=${data.tournament_id}`;
-// 				} catch (error) {
-// 					console.error('Error creating tournament:', error);
-// 					alert("Error creating tournament. Please try again.");
-// 				}
-// 			});
-// 		}
-// 	}
-    
-//     updatePlayersList() {
-//         const playersList = document.getElementById('players-list');
-        
-//         if (!playersList) {
-//             console.error("Players list element not found!");
-//             return;
-//         }
-        
-//         // Clear the current list
-//         playersList.innerHTML = '';
-        
-//         // Add each player to the list
-//         this.players.forEach((player, index) => {
-//             const li = document.createElement('li');
-//             li.className = 'text-white mb-2 d-flex justify-content-between align-items-center';
-//             li.innerHTML = `
-//                 <span>${player.name} (${player.type})</span>
-//                 <button class="btn btn-sm btn-filled remove-player" data-index="${index}">
-//                     <img src="static/assets/UI/icons/minus.svg" alt="Remove" width="20" height="20">
-//                 </button>
-//             `;
-            
-//             playersList.appendChild(li);
-            
-//             // Add remove functionality
-//             const removeBtn = li.querySelector('.remove-player');
-//             removeBtn.addEventListener('click', () => {
-//                 console.log(`Removing player at index ${index}`);
-//                 this.players.splice(index, 1);
-//                 this.updatePlayersList();
-                
-//                 const startBtn = document.getElementById('start-tournament');
-//                 if (startBtn) {
-//                     startBtn.disabled = this.players.length < 3;
-//                 }
-//             });
-//         });
-//     }
-    
-//     stopJS() {
-//         // Clean up any intervals or event listeners if needed
-//     }
-// }
-
-// Modify your TournamentSetup.js file to include online users
-
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
@@ -191,10 +5,11 @@ export default class extends AbstractView {
         super();
         this.setTitle("42_group - Tournament Setup");
         this.players = [];
+        this.currentUser = null; // Will store current user data
     }
     
     async getHtml() {
-        // Update your HTML to include an online users section
+        // Same HTML structure as your previous code
         return `
             <div class="full-height d-flex flex-column align-items-center justify-content-center">
                 <div class="container container-tournament p-5 mb-5">
@@ -253,9 +68,17 @@ export default class extends AbstractView {
                     
                     <!-- Tournament Controls -->
                     <div class="row justify-content-center mt-4">
-                        <div class="col-md-6 d-flex justify-content-between">
+                        <div class="col-md-6 d-flex justify-content-center">
                             <button id="start-tournament" class="btn btn-filled" disabled>Begin Tournament</button>
-                            <button id="cancel-setup" class="btn btn-outlined">Cancel</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Return to Game Selection Button -->
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <a role="button" class="return-btn btn btn-lg text-light text-center d-flex align-items-center justify-content-center p-3 mt-5" href="/selectgame" data-link>
+                                <img src="static/assets/UI/icons/game.svg" alt="menugmae Button" id="gamememnu">
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -277,8 +100,10 @@ export default class extends AbstractView {
         const startTournamentBtn = document.getElementById('start-tournament');
         const playerNameInput = document.getElementById('player-name');
         const playerTypeSelect = document.getElementById('player-type');
-        const cancelBtn = document.getElementById('cancel-setup');
         const onlineUsersList = document.getElementById('online-users-list');
+        
+        // First, get current user profile
+        await this.getCurrentUser();
         
         // Set initial state of start button
         if (startTournamentBtn) {
@@ -288,75 +113,70 @@ export default class extends AbstractView {
         // Load online users
         this.loadOnlineUsers(onlineUsersList);
         
-        // Handle Cancel button
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
-                window.location.href = '/selectgame';
-            });
-        }
+        // No need to handle the cancel button as we've replaced it with a direct link
         
         // Add player to the tournament
-		if (addPlayerBtn) {
-			addPlayerBtn.addEventListener('click', async () => {
-				console.log("Add button clicked!");
-				const name = playerNameInput.value.trim();
-				const type = playerTypeSelect.value;
-				
-				if (!name) {
-					return; // Don't add empty names
-				}
-				
-				if (this.players.length >= 8) {
-					console.log("Cannot add player. Max players reached.");
-					alert("Maximum of 8 players reached");
-					return;
-				}
-				
-				// If adding a registered user, verify they exist
-				if (type === 'user') {
-					try {
-						// First check if any player (user or guest) already has this name
-						const isDuplicate = this.players.some(player => 
-							player.name.toLowerCase() === name.toLowerCase()
-						);
-						
-						if (isDuplicate) {
-							alert("A player with this name is already in the tournament");
-							return;
-						}
-						
-						// Verify the user exists in the database
-						const exists = await this.verifyUserExists(name);
-						
-						if (!exists) {
-							alert(`User "${name}" does not exist`);
-							return;
-						}
-						
-						// Add the verified user
-						this.addPlayer(name, type);
-						playerNameInput.value = '';
-						
-					} catch (error) {
-						console.error("Error verifying user:", error);
-						alert("Error verifying user. Please try again.");
-					}
-				} else {
-					// For guest players, just check for duplicates and add them
-					const isDuplicate = this.players.some(player => 
-						player.name.toLowerCase() === name.toLowerCase()
-					);
-					
-					if (isDuplicate) {
-						alert("A player with this name is already in the tournament");
-						return;
-					}
-					
-					this.addPlayer(name, type);
-					playerNameInput.value = '';
-				}
-			});
-		}
+        if (addPlayerBtn) {
+            addPlayerBtn.addEventListener('click', async () => {
+                console.log("Add button clicked!");
+                const name = playerNameInput.value.trim();
+                const type = playerTypeSelect.value;
+                
+                if (!name) {
+                    return; // Don't add empty names
+                }
+                
+                if (this.players.length >= 8) {
+                    console.log("Cannot add player. Max players reached.");
+                    alert("Maximum of 8 players reached");
+                    return;
+                }
+                
+                // If adding a registered user, verify they exist
+                if (type === 'user') {
+                    try {
+                        // First check if any player (user or guest) already has this name
+                        const isDuplicate = this.players.some(player => 
+                            player.name.toLowerCase() === name.toLowerCase()
+                        );
+                        
+                        if (isDuplicate) {
+                            alert("A player with this name is already in the tournament");
+                            return;
+                        }
+                        
+                        // Verify the user exists in the database
+                        const exists = await this.verifyUserExists(name);
+                        
+                        if (!exists) {
+                            alert(`User "${name}" does not exist`);
+                            return;
+                        }
+                        
+                        // Add the verified user
+                        this.addPlayer(name, type);
+                        playerNameInput.value = '';
+                        
+                    } catch (error) {
+                        console.error("Error verifying user:", error);
+                        alert("Error verifying user. Please try again.");
+                    }
+                } else {
+                    // For guest players, just check for duplicates and add them
+                    const isDuplicate = this.players.some(player => 
+                        player.name.toLowerCase() === name.toLowerCase()
+                    );
+                    
+                    if (isDuplicate) {
+                        alert("A player with this name is already in the tournament");
+                        return;
+                    }
+                    
+                    this.addPlayer(name, type);
+                    playerNameInput.value = '';
+                }
+            });
+        }
         
         // Start tournament button
         if (startTournamentBtn) {
@@ -413,43 +233,72 @@ export default class extends AbstractView {
         }
     }
 
-	async verifyUserExists(username) {
-		try {
-			// First try using a dedicated endpoint if it exists
-			try {
-				const response = await fetch(`/api/check_user_exists?username=${encodeURIComponent(username)}`, {
-					credentials: 'include'
-				});
-				
-				if (response.ok) {
-					const data = await response.json();
-					return data.exists;
-				}
-			} catch (e) {
-				console.log("No dedicated endpoint for user verification, falling back to users list");
-			}
-			
-			// Fall back to checking the full users list
-			const response = await fetch('/api/users_list', {
-				credentials: 'include'
-			});
-			
-			if (!response.ok) {
-				throw new Error('Failed to fetch users list');
-			}
-			
-			const users = await response.json();
-			
-			// Case insensitive check for the username
-			return users.some(user => 
-				user.username.toLowerCase() === username.toLowerCase()
-			);
-			
-		} catch (error) {
-			console.error('Error verifying user:', error);
-			throw error;
-		}
-	}
+    async getCurrentUser() {
+        try {
+            const response = await fetch('/api/profile', {
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch current user');
+            }
+            
+            const data = await response.json();
+            this.currentUser = data.user;
+            
+            // Add current user to the players list automatically if they have an account
+            if (this.currentUser) {
+                // Determine display name - use alias if present, otherwise username
+                const displayName = this.currentUser.alias || this.currentUser.username;
+                console.log(`Adding current user automatically: ${displayName}`);
+                
+                // Add current user to players list
+                this.addPlayer(this.currentUser.username, 'user');
+            }
+            
+        } catch (error) {
+            console.error('Error fetching current user:', error);
+            // Continue without adding the user automatically if there's an error
+        }
+    }
+
+    async verifyUserExists(username) {
+        try {
+            // First try using a dedicated endpoint if it exists
+            try {
+                const response = await fetch(`/api/check_user_exists?username=${encodeURIComponent(username)}`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.exists;
+                }
+            } catch (e) {
+                console.log("No dedicated endpoint for user verification, falling back to users list");
+            }
+            
+            // Fall back to checking the full users list
+            const response = await fetch('/api/users_list', {
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch users list');
+            }
+            
+            const users = await response.json();
+            
+            // Case insensitive check for the username
+            return users.some(user => 
+                user.username.toLowerCase() === username.toLowerCase()
+            );
+            
+        } catch (error) {
+            console.error('Error verifying user:', error);
+            throw error;
+        }
+    }
     
     async loadOnlineUsers(onlineUsersList) {
         try {
@@ -467,22 +316,39 @@ export default class extends AbstractView {
             
             const users = await response.json();
             
-            // Get current user to exclude them
-            const profileResponse = await fetch('/api/profile', {
-                credentials: 'include'
-            });
+            // Debug: Log all users to inspect the data
+            console.log("All users from API:", users);
             
-            if (!profileResponse.ok) {
-                throw new Error('Failed to fetch profile');
+            // Get current user's username
+            const currentUsername = this.currentUser ? this.currentUser.username : null;
+            console.log("Current username:", currentUsername);
+            
+            // Filter for online users and exclude current user (already added to tournament)
+            // Store usernames we've already processed to avoid duplicates
+            const processedUsernames = new Set();
+            const onlineUsers = [];
+            
+            for (const user of users) {
+                // Debug the user object
+                console.log(`Processing user: ${user.username}, online: ${user.online_status}`);
+                
+                // Skip if not online, is current user, or already processed
+                if (
+                    !user.online_status || 
+                    user.username === currentUsername || 
+                    processedUsernames.has(user.username.toLowerCase())
+                ) {
+                    console.log(`Skipping user: ${user.username}`);
+                    continue;
+                }
+                
+                // Add to processed set and online users array
+                processedUsernames.add(user.username.toLowerCase());
+                onlineUsers.push(user);
+                console.log(`Added to online users: ${user.username}`);
             }
             
-            const profileData = await profileResponse.json();
-            const currentUsername = profileData.user.username;
-            
-            // Filter for online users and exclude current user
-            const onlineUsers = users.filter(user => 
-                user.online_status === true && user.username !== currentUsername
-            );
+            console.log(`Found ${onlineUsers.length} unique online users after filtering`);
             
             if (onlineUsers.length === 0) {
                 onlineUsersList.innerHTML = '<div class="text-center">No online users available</div>';
@@ -490,72 +356,96 @@ export default class extends AbstractView {
             }
             
             // Create elements for each online user
-            onlineUsers.forEach(user => {
-                // Check if user is already in the tournament
-                const isAlreadyAdded = this.players.some(
-                    player => player.type === 'user' && player.name === user.username
-                );
+            onlineUsersList.innerHTML = '<div class="text-center">Processing online users...</div>';
+            
+            // Clear the placeholder
+            setTimeout(() => {
+                onlineUsersList.innerHTML = '';
                 
-                // Create the user element
-                const userElement = document.createElement('div');
-                userElement.className = 'd-flex justify-content-between align-items-center p-2 mb-2 user-element tabbable';
-                userElement.tabIndex = 0;
-                
-                // Create user info display
-                const userInfo = document.createElement('div');
-                userInfo.className = 'd-flex align-items-center';
-                
-                // Create profile pic
-                const profilePic = document.createElement('img');
-                profilePic.src = user.profile_picture_url;
-                profilePic.alt = 'profile picture';
-                profilePic.className = 'profile-pic-list';
-                
-                // Create username text
-                const username = document.createElement('span');
-                username.className = 'ms-2';
-                username.textContent = user.username;
-                
-                // Create online indicator
-                const onlineIndicator = document.createElement('span');
-                onlineIndicator.className = 'ms-2 badge bg-success';
-                onlineIndicator.textContent = 'Online';
-                
-                // Assemble user info
-                userInfo.appendChild(profilePic);
-                userInfo.appendChild(username);
-                userInfo.appendChild(onlineIndicator);
-                
-                // Create add button
-                const addButton = document.createElement('button');
-                addButton.className = 'btn btn-sm btn-filled';
-                addButton.textContent = isAlreadyAdded ? 'Added' : 'Add';
-                addButton.disabled = isAlreadyAdded;
-                
-                if (!isAlreadyAdded) {
-                    addButton.addEventListener('click', () => {
-                        this.addPlayer(user.username, 'user');
-                        addButton.textContent = 'Added';
-                        addButton.disabled = true;
-                    });
+                // Manually create elements for each online user
+                onlineUsers.forEach(user => {
+                    // Debug the user being added to UI
+                    console.log(`Adding UI element for user: ${user.username}`);
                     
-                    // Add keydown event for accessibility
-                    userElement.addEventListener('keydown', (event) => {
-                        if (event.key === 'Enter') {
+                    // Check if user is already in the tournament - case insensitive check
+                    const isAlreadyAdded = this.players.some(
+                        player => player.type === 'user' && player.name.toLowerCase() === user.username.toLowerCase()
+                    );
+                    
+                    // Create the user element
+                    const userElement = document.createElement('div');
+                    userElement.className = 'd-flex justify-content-between align-items-center p-2 mb-2 user-element tabbable';
+                    userElement.tabIndex = 0;
+                    userElement.dataset.username = user.username; // Add data attribute for debugging
+                    
+                    // Create user info display
+                    const userInfo = document.createElement('div');
+                    userInfo.className = 'd-flex align-items-center';
+                    
+                    // Create profile pic
+                    const profilePic = document.createElement('img');
+                    profilePic.src = user.profile_picture_url;
+                    profilePic.alt = 'profile picture';
+                    profilePic.className = 'profile-pic-list';
+                    
+                    // Determine display name - show alias if present, otherwise username
+                    const displayName = user.alias || user.username;
+                    
+                    // Create username text
+                    const username = document.createElement('span');
+                    username.className = 'ms-2';
+                    username.textContent = displayName;
+                    
+                    // Create online indicator
+                    const onlineIndicator = document.createElement('span');
+                    onlineIndicator.className = 'ms-2 badge bg-success';
+                    onlineIndicator.textContent = 'Online';
+                    
+                    // Assemble user info
+                    userInfo.appendChild(profilePic);
+                    userInfo.appendChild(username);
+                    userInfo.appendChild(onlineIndicator);
+                    
+                    // Create add button
+                    const addButton = document.createElement('button');
+                    addButton.className = 'btn btn-sm btn-filled';
+                    addButton.textContent = isAlreadyAdded ? 'Added' : 'Add';
+                    addButton.disabled = isAlreadyAdded;
+                    
+                    if (!isAlreadyAdded) {
+                        addButton.addEventListener('click', () => {
+                            console.log(`Adding online user: ${user.username}`);
                             this.addPlayer(user.username, 'user');
                             addButton.textContent = 'Added';
                             addButton.disabled = true;
-                        }
-                    });
+                        });
+                        
+                        // Add keydown event for accessibility
+                        userElement.addEventListener('keydown', (event) => {
+                            if (event.key === 'Enter') {
+                                console.log(`Adding online user via keyboard: ${user.username}`);
+                                this.addPlayer(user.username, 'user');
+                                addButton.textContent = 'Added';
+                                addButton.disabled = true;
+                            }
+                        });
+                    }
+                    
+                    // Assemble final element
+                    userElement.appendChild(userInfo);
+                    userElement.appendChild(addButton);
+                    
+                    // Add to the list
+                    onlineUsersList.appendChild(userElement);
+                });
+                
+                // If no elements were added, show a message
+                if (onlineUsersList.children.length === 0) {
+                    onlineUsersList.innerHTML = '<div class="text-center">No online users available</div>';
                 }
                 
-                // Assemble final element
-                userElement.appendChild(userInfo);
-                userElement.appendChild(addButton);
-                
-                // Add to the list
-                onlineUsersList.appendChild(userElement);
-            });
+                console.log(`Added ${onlineUsersList.children.length} user elements to the UI`);
+            }, 100);
             
         } catch (error) {
             console.error('Error loading online users:', error);
@@ -563,37 +453,44 @@ export default class extends AbstractView {
         }
     }
     
-	addPlayer(name, type) {
-		// Check for duplicates across all player types (case insensitive)
-		const isDuplicate = this.players.some(player => 
-			player.name.toLowerCase() === name.toLowerCase()
-		);
-		
-		if (isDuplicate) {
-			alert("A player with this name is already in the tournament");
-			return;
-		}
-		
-		// Add to players array
-		this.players.push({
-			name: name,
-			type: type
-		});
-		
-		console.log("Players array:", this.players);
-		
-		// Update UI
-		this.updatePlayersList();
-		
-		// Refresh online users list to update "Added" status
-		this.loadOnlineUsers(document.getElementById('online-users-list'));
-		
-		// Update start button state
-		const startTournamentBtn = document.getElementById('start-tournament');
-		if (startTournamentBtn) {
-			startTournamentBtn.disabled = this.players.length < 3;
-		}
-	}
+    addPlayer(name, type) {
+        // Check for duplicates across all player types (case insensitive)
+        const isDuplicate = this.players.some(player => 
+            player.name.toLowerCase() === name.toLowerCase()
+        );
+        
+        if (isDuplicate) {
+            alert("A player with this name is already in the tournament");
+            return;
+        }
+
+        // If this is the current user, check if they have an alias to display
+        let displayName = name;
+        if (type === 'user' && this.currentUser && this.currentUser.username === name && this.currentUser.alias) {
+            displayName = this.currentUser.alias;
+        }
+        
+        // Add to players array with original name (for server) and display name (for UI)
+        this.players.push({
+            name: name,         // Original name/username (sent to server)
+            displayName: displayName, // Display name (for UI only)
+            type: type
+        });
+        
+        console.log("Players array:", this.players);
+        
+        // Update UI
+        this.updatePlayersList();
+        
+        // Refresh online users list to update "Added" status
+        this.loadOnlineUsers(document.getElementById('online-users-list'));
+        
+        // Update start button state
+        const startTournamentBtn = document.getElementById('start-tournament');
+        if (startTournamentBtn) {
+            startTournamentBtn.disabled = this.players.length < 3;
+        }
+    }
     
     updatePlayersList() {
         const playersList = document.getElementById('players-list');
@@ -610,8 +507,12 @@ export default class extends AbstractView {
         this.players.forEach((player, index) => {
             const li = document.createElement('li');
             li.className = 'text-white mb-2 d-flex justify-content-between align-items-center';
+            
+            // Use displayName for UI if available
+            const nameToShow = player.displayName || player.name;
+            
             li.innerHTML = `
-                <span>${player.name} (${player.type === 'user' ? 'User' : 'Guest'})</span>
+                <span>${nameToShow} (${player.type === 'user' ? 'User' : 'Guest'})</span>
                 <button class="btn btn-sm btn-filled remove-player" data-index="${index}">
                     <img src="static/assets/UI/icons/minus.svg" alt="Remove" width="20" height="20">
                 </button>
