@@ -644,3 +644,16 @@ LINE 1: SELECT 1 AS "a" FROM "user_management_customuser" WHERE "use...
 
 ERROR 2025-02-27 22:42:17,428 basehttp "POST /api/signup HTTP/1.0" 500 186431
 INFO 2025-02-27 22:46:37,947 autoreload Watching for file changes with StatReloader
+INFO 2025-02-27 22:53:23,478 autoreload Watching for file changes with StatReloader
+INFO 2025-02-27 23:02:43,919 autoreload Watching for file changes with StatReloader
+INFO 2025-02-28 09:01:21,399 autoreload Watching for file changes with StatReloader
+INFO 2025-02-28 09:13:11,379 autoreload Watching for file changes with StatReloader
+INFO 2025-02-28 09:16:21,768 autoreload Watching for file changes with StatReloader
+INFO 2025-02-28 09:19:23,918 autoreload Watching for file changes with StatReloader
+INFO 2025-02-28 09:23:08,106 autoreload Watching for file changes with StatReloader
+INFO 2025-02-28 09:26:40,869 autoreload Watching for file changes with StatReloader
+INFO 2025-02-28 09:30:30,680 autoreload Watching for file changes with StatReloader
+WARNING 2025-02-28 09:30:36,172 basehttp "GET /api/profile HTTP/1.0" 401 32
+INFO 2025-02-28 09:30:52,829 basehttp "POST /api/signup HTTP/1.0" 200 0
+WARNING 2025-02-28 09:30:58,425 basehttp "POST /api/login HTTP/1.0" 400 39
+INFO 2025-02-28 09:31:24,103 basehttp "POST /api/resetpass HTTP/1.0" 200 30

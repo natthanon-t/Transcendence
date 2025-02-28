@@ -16,10 +16,10 @@ services:
       - ./frontend:/usr/share/nginx/html
       - media_volume:/usr/share/nginx/html/media
       - ./logs/nginx:/logs/nginx   # Mount logs directory for ELK
-    depends_on:
-      - web
     networks:
       - transcendence
+    depends_on:
+      - web
 
   db:
     build: database
@@ -44,6 +44,7 @@ services:
       - ./back:/back
       - media_volume:/back/transcendence/media
       - ./logs/django:/logs/django   # Mount logs directory for ELK
+      - shared-data:/vault/token
     ports:
       - "8000:8000"
     depends_on:
