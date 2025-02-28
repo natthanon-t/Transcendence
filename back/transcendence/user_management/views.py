@@ -43,6 +43,15 @@ from rest_framework.generics import ListAPIView
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
+#TOURNAMENT
+import random
+import math
+from django.db.models import Max
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import Tournament, TournamentPlayer, TournamentMatch
+
 User = get_user_model()
 
 ### reset pass
@@ -358,7 +367,7 @@ class Verify2FA(views.APIView):
             token, created = Token.objects.get_or_create(user=user)
             serializer = CustomUserSerializer(instance=user)
             response = Response(status=status.HTTP_200_OK)
-            response.set_cookie(key='jwt', value=token.key, httponly=True, secure=True ,max_age=200)
+            response.set_cookie(key='jwt', value=token.key, httponly=True, secure=True ,max_age=86400)
             return response
             #return Response({'message': '2FA verified successfully'}, status=status.HTTP_200_OK)
         else:
@@ -378,3 +387,738 @@ def my_view(request):
 # add error log
 # except Exception as e:
 #     logger.error(f"Error sending email: {e}")
+
+### TOURNAMENT ###
+class CreateTournament(APIView):
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        tournament = Tournament.objects.create(creator=request.user)
+        players_data = request.data.get('players', [])
+        
+        if not 3 <= len(players_data) <= 8:
+            return Response({"error": "Tournament must have 3-8 players"}, status=400)
+        
+        # Create tournament players
+        for player_data in players_data:
+            if player_data.get('type') == 'user':
+                try:
+                    user = CustomUser.objects.get(username=player_data['username'])
+                    TournamentPlayer.objects.create(
+                        tournament=tournament,
+                        user=user
+                    )
+                except CustomUser.DoesNotExist:
+                    return Response({"error": f"User {player_data['username']} not found"}, status=400)
+            else:
+                TournamentPlayer.objects.create(
+                    tournament=tournament,
+                    guest_name=player_data['name']
+                )
+        
+        # Generate initial matches
+        self.generate_tournament_brackets(tournament)
+        return Response({"tournament_id": tournament.id}, status=201)
+        
+    def generate_tournament_brackets(self, tournament):
+        """
+		Creates all necessary matches for a tournament based on player count
+		"""
+        import math
+		
+        players = list(tournament.players.all())
+        random.shuffle(players)  # Randomize player order
+		
+        player_count = len(players)
+        print(f"Generating tournament for {player_count} players")
+		
+		# Special case for 5 players
+        if player_count == 5:
+            print("Creating 5-player tournament bracket")
+			
+			# Create first round - 1 match with 2 players
+            first_round_match = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[0],
+				player2=players[1],
+				round_number=1,
+				match_number=0
+			)
+			
+			# Create first semi-final - winner of first round vs first bye player
+            semi1 = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[2],  # First bye player
+				player2=None,  # Will be filled with first round winner
+				round_number=2,
+				match_number=0
+			)
+			
+			# Create second semi-final - between the other two bye players
+            semi2 = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[3],
+				player2=players[4],
+				round_number=2,
+				match_number=1
+			)
+			
+			# Create final match
+            final = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=None,
+				player2=None,
+				round_number=3,
+				match_number=0
+			)
+			
+            print("5-player tournament bracket created successfully")
+            return
+		
+		# Special case for 6 players
+        elif player_count == 6:
+            print("Creating 6-player tournament bracket")
+			
+			# Create first round - 2 matches with 4 players
+            first_round_match1 = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[0],
+				player2=players[1],
+				round_number=1,
+				match_number=0
+			)
+			
+            first_round_match2 = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[2],
+				player2=players[3],
+				round_number=1,
+				match_number=1
+			)
+			
+			# Create first semi-final - winner of first match vs first bye player
+            semi1 = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[4],  # First bye player
+				player2=None,  # Will be filled with first match winner
+				round_number=2,
+				match_number=0
+			)
+			
+			# Create second semi-final - winner of second match vs second bye player
+            semi2 = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[5],  # Second bye player
+				player2=None,  # Will be filled with second match winner
+				round_number=2,
+				match_number=1
+			)
+			
+			# Create final match
+            final = TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=None,
+				player2=None,
+				round_number=3,
+				match_number=0
+			)
+			
+            print("6-player tournament bracket created successfully")
+            return
+		
+		# For other player counts (3, 4, 7, 8), use the previous implementation
+		# Calculate rounds and byes
+        rounds_needed = math.ceil(math.log2(player_count))
+        perfect_bracket_size = 2 ** rounds_needed
+        bye_count = perfect_bracket_size - player_count
+		
+        if player_count == 3:
+			# First create the only first round match between two players
+            TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[1],
+				player2=players[2],
+				round_number=1,
+				match_number=0
+			)
+			
+			# Create the final with the bye player already set
+            TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[0],  # Bye player
+				player2=None,        # Will be filled with first round winner
+				round_number=2,      # This is the final
+				match_number=0
+			)
+            return
+		
+		# Handle 4 and 8 players (perfect brackets)
+        if player_count in [4, 8]:
+			# Create first round matches
+            for i in range(0, player_count, 2):
+                TournamentMatch.objects.create(
+					tournament=tournament,
+					player1=players[i],
+					player2=players[i+1],
+					round_number=1,
+					match_number=i // 2
+				)
+			
+			# For 4 players, create the final match
+            if player_count == 4:
+                TournamentMatch.objects.create(
+					tournament=tournament,
+					player1=None,
+					player2=None,
+					round_number=2,
+					match_number=0
+				)
+				
+			# For 8 players, create semi-finals and final
+            elif player_count == 8:
+				# Create semi-finals
+                for i in range(2):
+                    TournamentMatch.objects.create(
+						tournament=tournament,
+						player1=None,
+						player2=None,
+						round_number=2,
+						match_number=i
+					)
+				
+				# Create final
+                TournamentMatch.objects.create(
+					tournament=tournament,
+					player1=None,
+					player2=None,
+					round_number=3,
+					match_number=0
+				)
+            return
+		
+		# Handle 7 players
+        if player_count == 7:
+			# Create first round - 3 matches with 6 players
+            for i in range(0, 6, 2):
+                TournamentMatch.objects.create(
+					tournament=tournament,
+					player1=players[i],
+					player2=players[i+1],
+					round_number=1,
+					match_number=i // 2
+				)
+			
+			# Create first semi-final - bye player vs first match winner
+            TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=players[6],  # Bye player
+				player2=None,        # Will be filled with first match winner
+				round_number=2,
+				match_number=0
+			)
+			
+			# Create second semi-final - for winners of second and third matches
+            TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=None,
+				player2=None,
+				round_number=2,
+				match_number=1
+			)
+			
+			# Create final
+            TournamentMatch.objects.create(
+				tournament=tournament,
+				player1=None,
+				player2=None,
+				round_number=3,
+				match_number=0
+			)
+            return
+
+class UpdateTournamentMatch(APIView):
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, match_id):
+        try:
+            match = TournamentMatch.objects.get(id=match_id)
+        except TournamentMatch.DoesNotExist:
+            return Response({"error": "Match not found"}, status=404)
+
+        winner_id = request.data.get('winner_id')
+        player1_score = request.data.get('player1_score')
+        player2_score = request.data.get('player2_score')
+
+        # Validate data
+        if not winner_id or player1_score is None or player2_score is None:
+            return Response({"error": "Missing required fields"}, status=400)
+
+        try:
+            winner = TournamentPlayer.objects.get(id=winner_id)
+            if winner not in [match.player1, match.player2]:
+                return Response({"error": "Invalid winner"}, status=400)
+        except TournamentPlayer.DoesNotExist:
+            return Response({"error": "Winner not found"}, status=400)
+
+        # Update match results
+        try:
+            match.winner = winner
+            match.player1_score = int(player1_score)
+            match.player2_score = int(player2_score)
+            match.completed = True
+            match.save()
+            
+            try:
+                match_data = {
+					'match_type': 'TOURNAMENT',
+					'player1_score': match.player1_score,
+					'player2_score': match.player2_score,
+					'tournament': match.tournament,
+					'tournament_round': match.round_number
+				}
+				
+				# Handle player1
+                if match.player1:
+                    if match.player1.user:
+                        match_data['player1'] = match.player1.user 
+                    else:
+                        match_data['player1_guest_name'] = match.player1.guest_name
+				
+				# Handle player2
+                if match.player2:
+                    if match.player2.user:
+                        match_data['player2'] = match.player2.user
+                    else:
+                        match_data['player2_guest_name'] = match.player2.guest_name
+				
+				# Handle winner
+                if match.winner:
+                    if match.winner.user:
+                        match_data['winner'] = match.winner.user
+                    else:
+                        match_data['winner_guest_name'] = match.winner.guest_name
+				
+                MatchHistory.objects.create(**match_data)
+                print(f"Match history recorded for tournament match {match.id}")
+            except Exception as e:
+                print(f"Error recording match history: {str(e)}")
+
+            # Mark loser as eliminated
+            loser = match.player2 if winner == match.player1 else match.player1
+            if loser:
+                loser.eliminated = True
+                loser.save()
+
+            # Update tournament progression
+            self.create_next_round_match(match)
+            
+            return Response({"status": "Match updated successfully"}, status=200)
+            
+        except Exception as e:
+            import traceback
+            print(f"Error updating match: {str(e)}")
+            print(traceback.format_exc())
+            return Response({"error": f"Server error: {str(e)}"}, status=500)
+
+    def create_next_round_match(self, completed_match):
+        """
+        Advances a winner to the next round's match
+        """
+        import traceback
+        
+        tournament = completed_match.tournament
+        current_round = completed_match.round_number
+        match_number = completed_match.match_number
+        winner = completed_match.winner
+        
+        # Add debugging information
+        print(f"Processing match advancement for match #{completed_match.id}")
+        print(f"Round: {current_round}, Match Number: {match_number}")
+        print(f"Winner: {winner.user.username if winner and winner.user else (winner.guest_name if winner else 'None')}")
+        
+        if not winner:
+            print("Warning: No winner set for completed match")
+            return
+        
+        try:
+            # Get all tournament matches
+            all_matches = TournamentMatch.objects.filter(tournament=tournament)
+            
+            # Count the players to determine tournament type
+            player_count = TournamentPlayer.objects.filter(tournament=tournament).count()
+            print(f"Tournament has {player_count} players")
+            
+            # Find the maximum round number
+            max_round = all_matches.aggregate(max_round=Max('round_number'))['max_round']
+            print(f"Maximum round number: {max_round}")
+            
+            # Check if this is the final match
+            if current_round == max_round:
+                # This was the final - tournament is complete
+                tournament.status = 'COMPLETED'
+                tournament.save()
+                print(f"Tournament {tournament.id} completed!")
+                return
+            
+            # Special handling for 7-player tournament
+            if player_count == 7 and current_round == 1:
+                print(f"Processing 7-player tournament, round 1, match {match_number}")
+                
+                if match_number == 0:
+                    # First match winner goes to semi-final 1 as player2 (with bye player)
+                    next_match = TournamentMatch.objects.get(
+                        tournament=tournament,
+                        round_number=2,
+                        match_number=0
+                    )
+                    next_match.player2 = winner
+                elif match_number == 1:
+                    # Second match winner goes to semi-final 2 as player1
+                    next_match = TournamentMatch.objects.get(
+                        tournament=tournament,
+                        round_number=2,
+                        match_number=1
+                    )
+                    next_match.player1 = winner
+                elif match_number == 2:
+                    # Third match winner goes to semi-final 2 as player2
+                    next_match = TournamentMatch.objects.get(
+                        tournament=tournament,
+                        round_number=2,
+                        match_number=1
+                    )
+                    next_match.player2 = winner
+                
+                next_match.save()
+                print(f"Advanced 7-player tournament round 1 winner to appropriate semi-final")
+                return
+            elif player_count == 7 and current_round == 2:
+                # Semi-final winners advance to final
+                next_match = TournamentMatch.objects.get(
+                    tournament=tournament,
+                    round_number=3,
+                    match_number=0
+                )
+                
+                # Determine which player slot to fill
+                if next_match.player1 is None:
+                    next_match.player1 = winner
+                else:
+                    next_match.player2 = winner
+                
+                next_match.save()
+                print(f"Advanced semi-final winner to final in 7-player tournament")
+                return
+            
+            # Special handling for 5-player tournament
+            if player_count == 5:
+                if current_round == 1:
+                    # First round winner advances to first semi-final as player2
+                    next_match = TournamentMatch.objects.get(
+                        tournament=tournament,
+                        round_number=2,
+                        match_number=0
+                    )
+                    next_match.player2 = winner
+                    next_match.save()
+                    print(f"Advanced winner to first semi-final in 5-player tournament")
+                    return
+                elif current_round == 2:
+                    # Semi-final winners advance to final
+                    next_match = TournamentMatch.objects.get(
+                        tournament=tournament,
+                        round_number=3,
+                        match_number=0
+                    )
+                    
+                    # Determine which player slot to fill
+                    if next_match.player1 is None:
+                        next_match.player1 = winner
+                    else:
+                        next_match.player2 = winner
+                    
+                    next_match.save()
+                    print(f"Advanced winner to final in 5-player tournament")
+                    return
+            
+            # Special handling for 6-player tournament
+            if player_count == 6:
+                if current_round == 1:
+                    # First round winner advances to semi-final
+                    next_match_number = 0 if match_number == 0 else 1
+                    next_match = TournamentMatch.objects.get(
+                        tournament=tournament,
+                        round_number=2,
+                        match_number=next_match_number
+                    )
+                    next_match.player2 = winner
+                    next_match.save()
+                    print(f"Advanced winner to semi-final #{next_match_number} in 6-player tournament")
+                    return
+                elif current_round == 2:
+                    # Semi-final winners advance to final
+                    next_match = TournamentMatch.objects.get(
+                        tournament=tournament,
+                        round_number=3,
+                        match_number=0
+                    )
+                    
+                    # Determine which player slot to fill
+                    if next_match.player1 is None:
+                        next_match.player1 = winner
+                    else:
+                        next_match.player2 = winner
+                    
+                    next_match.save()
+                    print(f"Advanced winner to final in 6-player tournament")
+                    return
+            
+            # Special handling for 3-player tournament
+            if player_count == 3 and current_round == 1:
+                # First round winner advances to final
+                next_match = TournamentMatch.objects.get(
+                    tournament=tournament,
+                    round_number=2,
+                    match_number=0
+                )
+                next_match.player2 = winner
+                next_match.save()
+                print(f"Advanced winner to the final in 3-player tournament")
+                return
+            
+            # Generic handling for 4 and 8 player tournaments (perfect brackets)
+            next_round = current_round + 1
+            next_match_number = match_number // 2
+            
+            print(f"Advancing to round {next_round}, match {next_match_number}")
+            
+            # Get the next round match
+            next_match = TournamentMatch.objects.get(
+                tournament=tournament,
+                round_number=next_round,
+                match_number=next_match_number
+            )
+            
+            # Determine which player slot to fill
+            if match_number % 2 == 0:  # Even match numbers go to player1
+                next_match.player1 = winner
+                print(f"Set as player1 in next match")
+            else:  # Odd match numbers go to player2
+                next_match.player2 = winner
+                print(f"Set as player2 in next match")
+            
+            next_match.save()
+            print(f"Successfully advanced winner to round {next_round}, match {next_match_number}")
+            
+        except Exception as e:
+            print(f"Error advancing winner: {str(e)}")
+            print(traceback.format_exc())
+            # Re-raise to make the error visible in the response
+            raise
+
+class TournamentMatches(APIView):
+    """
+    Get all matches for a specific tournament
+    """
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, tournament_id):
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+        except Tournament.DoesNotExist:
+            return Response({"error": "Tournament not found"}, status=404)
+        
+        matches = TournamentMatch.objects.filter(tournament=tournament)
+        serializer = TournamentMatchSerializer(matches, many=True)
+        return Response({"matches": serializer.data})
+    
+class TournamentMatchDetail(APIView):
+    """
+    Get details for a specific match
+    """
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, match_id):
+        try:
+            match = TournamentMatch.objects.get(id=match_id)
+        except TournamentMatch.DoesNotExist:
+            return Response({"error": "Match not found"}, status=404)
+        
+        serializer = TournamentMatchSerializer(match)
+        return Response(serializer.data)
+    
+class CheckUserExists(APIView):
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        username = request.query_params.get('username')
+        if not username:
+            return Response({"error": "Username is required"}, status=400)
+        
+        exists = CustomUser.objects.filter(username=username).exists()
+        return Response({"exists": exists})
+
+### MATCH HISTORY ###
+# class RecordMatchHistory(APIView):
+#     authentication_classes = [CookieTokenAuthentication]
+#     permission_classes = [IsAuthenticated]
+    
+#     def post(self, request):
+#         match_type = request.data.get('match_type')
+#         player1_id = request.data.get('player1_id')
+#         player2_id = request.data.get('player2_id')
+#         winner_id = request.data.get('winner_id')
+#         player1_score = request.data.get('player1_score')
+#         player2_score = request.data.get('player2_score')
+#         player1_guest_name = request.data.get('player1_guest_name')
+#         player2_guest_name = request.data.get('player2_guest_name')
+#         winner_guest_name = request.data.get('winner_guest_name')
+        
+#         match_data = {
+#             'match_type': match_type,
+#             'player1_score': player1_score,
+#             'player2_score': player2_score,
+#             'player1_guest_name': player1_guest_name,
+#             'player2_guest_name': player2_guest_name,
+#             'winner_guest_name': winner_guest_name,
+#         }
+        
+#         # Set registered user players if provided
+#         if player1_id:
+#             try:
+#                 match_data['player1'] = CustomUser.objects.get(id=player1_id)
+#             except CustomUser.DoesNotExist:
+#                 return Response({"error": f"User with ID {player1_id} not found"}, status=400)
+                
+#         if player2_id:
+#             try:
+#                 match_data['player2'] = CustomUser.objects.get(id=player2_id)
+#             except CustomUser.DoesNotExist:
+#                 return Response({"error": f"User with ID {player2_id} not found"}, status=400)
+                
+#         if winner_id:
+#             try:
+#                 match_data['winner'] = CustomUser.objects.get(id=winner_id)
+#             except CustomUser.DoesNotExist:
+#                 return Response({"error": f"User with ID {winner_id} not found"}, status=400)
+            
+#         # Add tournament data if applicable
+#         if match_type == 'TOURNAMENT':
+#             tournament_id = request.data.get('tournament_id')
+#             round_number = request.data.get('round')
+            
+#             if tournament_id:
+#                 try:
+#                     match_data['tournament'] = Tournament.objects.get(id=tournament_id)
+#                     match_data['tournament_round'] = round_number
+#                 except Tournament.DoesNotExist:
+#                     return Response({"error": f"Tournament not found"}, status=400)
+        
+#         try:
+#             # Create the match history record
+#             MatchHistory.objects.create(**match_data)
+#             return Response({"status": "Match recorded successfully"}, status=200)
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=400)
+
+class UserMatchHistory(APIView):
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        user = request.user
+        
+        # Get all matches where the user was a player
+        matches = MatchHistory.objects.filter(
+            Q(player1=user) | Q(player2=user)
+        ).order_by('-match_date')
+        
+        serializer = MatchHistorySerializer(matches, many=True)
+        return Response(serializer.data)
+    
+class RecordMatchView(APIView):
+    """
+    API endpoint to record match results for both tournament and 1v1 matches
+    """
+    authentication_classes = [CookieTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        match_type = request.data.get('match_type', 'FRIENDLY')
+        player1_id = request.data.get('player1_id')
+        player2_id = request.data.get('player2_id')
+        player1_guest_name = request.data.get('player1_guest_name')
+        player2_guest_name = request.data.get('player2_guest_name')
+        player1_score = request.data.get('player1_score')
+        player2_score = request.data.get('player2_score')
+        winner_id = request.data.get('winner_id')
+        winner_guest_name = request.data.get('winner_guest_name')
+        
+        # Validate required fields
+        if player1_score is None or player2_score is None:
+            return Response({"error": "Player scores are required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if not ((player1_id or player1_guest_name) and (player2_id or player2_guest_name)):
+            return Response({"error": "Both players must be specified"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if not (winner_id or winner_guest_name):
+            return Response({"error": "Winner must be specified"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Prepare match data
+        match_data = {
+            'match_type': match_type,
+            'player1_score': player1_score,
+            'player2_score': player2_score,
+            'player1_guest_name': player1_guest_name,
+            'player2_guest_name': player2_guest_name,
+            'winner_guest_name': winner_guest_name,
+        }
+        
+        # Set player objects if IDs are provided
+        if player1_id:
+            try:
+                match_data['player1'] = CustomUser.objects.get(id=player1_id)
+            except CustomUser.DoesNotExist:
+                return Response({"error": f"User with ID {player1_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+                
+        if player2_id:
+            try:
+                match_data['player2'] = CustomUser.objects.get(id=player2_id)
+            except CustomUser.DoesNotExist:
+                return Response({"error": f"User with ID {player2_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+                
+        if winner_id:
+            try:
+                match_data['winner'] = CustomUser.objects.get(id=winner_id)
+            except CustomUser.DoesNotExist:
+                return Response({"error": f"User with ID {winner_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Add tournament data if applicable
+        if match_type == 'TOURNAMENT':
+            tournament_id = request.data.get('tournament_id')
+            tournament_round = request.data.get('tournament_round')
+            
+            if tournament_id:
+                try:
+                    match_data['tournament'] = Tournament.objects.get(id=tournament_id)
+                    if tournament_round:
+                        match_data['tournament_round'] = tournament_round
+                except Tournament.DoesNotExist:
+                    return Response({"error": f"Tournament not found"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Create the match history record
+            match = MatchHistory.objects.create(**match_data)
+            return Response({
+                "status": "success",
+                "message": "Match recorded successfully",
+                "match_id": match.id
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            logger.error(f"Error recording match: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
