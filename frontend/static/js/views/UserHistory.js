@@ -27,9 +27,9 @@ export default class extends AbstractView {
                     </div>
                 </div>
                 
-                <a role="button" class="return-btn btn btn-lg text-light text-center d-flex align-items-center justify-content-center p-3 mt-5" href="/profile" data-link>
-                    <img src="static/assets/UI/icons/back-arrow.svg" alt="Back to Profile" width="24" height="24">
-                </a>
+            <a role="button" class="return-btn btn btn-lg text-light text-center d-flex align-items-center justify-content-center p-3 mt-5" href="/profile" data-link>
+                <img src="static/assets/UI/icons/profile.svg" alt="profile button" id="profile">
+            </a>
             </div>
         `;
     }
