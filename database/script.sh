@@ -22,10 +22,8 @@ if [[ -z "$POSTGRES_USER" || -z "$POSTGRES_PASSWORD" || -z "$POSTGRES_DB" ]]; th
     exit 1
 fi
 
-echo "export POSTGRES_USER=$POSTGRES_USER" > /envfile
-echo "export POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> /envfile
-echo "export POSTGRES_DB=$POSTGRES_DB" >> /envfile
-
-source /envfile
+export POSTGRES_USER=$POSTGRES_USER
+export POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+export POSTGRES_DB=$POSTGRES_DB
 
 exec docker-entrypoint.sh postgres
