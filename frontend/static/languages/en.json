@@ -69,5 +69,13 @@
 	"friends": "Friends",
 	"all users": "All Users",
 	"no users": "No users found",
-	"no friends": "No friends found"
+	"no friends": "No friends found",
+
+	"match-history": "Match History",
+	"1v1mode": "1 vs 1",
+	"tournament-setup": "Tournament Setup",
+	"1v1-setup": "1vs1 Setup",
+	"add-player": "Add Player",
+	"online-users": "Online Players",
+	"tournament-players": "Tournament Players"
 }

@@ -1,4 +1,4 @@
-FROM postgres:13-bookworm
+FROM postgres:17-bookworm
 USER root
 # install vault
 RUN apt-get update && \

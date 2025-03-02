@@ -9,6 +9,12 @@ import EditProfile from "./views/EditProfile.js";
 import Startpage from "./views/Start.js";
 import Friends from "./views/Friends.js";
 import resetpass from "./views/resetpass.js";
+import TournamentSetup from "./views/tournamentSetup.js";
+import TournamentMatch from "./views/tournamentMatch.js";
+import UserHistory from "./views/UserHistory.js";
+import OneVsOneSetup from "./views/1v1Setup.js";
+import OneVsOneGame from "./views/1v1Game.js";
+
 
 // ------------------------------- IMPORT UTILS ---------------------------------
 import { updateTexts } from "./utils/languages.js";
@@ -52,11 +58,15 @@ const routes = [
 	{ path: "/selectgame", view: selectgame},
 	{ path: "/tdgame", view: tdgame},
 	{ path: "/tournamentgame", view: tournamentgame},
+	{ path: "/tournamentsetup", view: TournamentSetup },
+	{ path: "/tournamentMatch", view: TournamentMatch },
 	{ path: "/friends", view: Friends },
-	{ path: "/resetpass", view: resetpass }
+	{ path: "/resetpass", view: resetpass },
+	{ path: "/match-history", view: UserHistory },
+	{ path: "/1v1setup", view: OneVsOneSetup },
+	{ path: "/1v1game", view: OneVsOneGame }
 	
 
-	
 	// { path: "/auth", view: auth }
 ];
 
