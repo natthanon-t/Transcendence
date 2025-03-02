@@ -16,6 +16,7 @@ services:
       - ./frontend:/usr/share/nginx/html
       - media_volume:/usr/share/nginx/html/media
       - ./logs/nginx:/logs/nginx   # Mount logs directory for ELK
+      - shared-data:/vault/token/
     networks:
       - transcendence
     depends_on:
@@ -106,15 +107,12 @@ services:
     build: grafana
     ports:
       - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-      - GF_SECURITY_DISABLE_INITIAL_ADMIN_CHANGE=true
     networks:
       - transcendence
     volumes:
       - ./grafana/dashboards:/var/lib/grafana/dashboards/
       - ./grafana/provisioning:/etc/grafana/provisioning/
+      - shared-data:/vault/token/
     depends_on:
       - prometheus
       - db

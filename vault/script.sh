@@ -1,7 +1,6 @@
 #!/bin/bash
 
 pkill vault
-rm -rf /vault/data/*
 
 # Start Vault in the background, redirecting the output to a file and stderror to stdout
 vault server -dev -config=/vault/config/vault.hcl > /tmp/init_vault.log 2>&1 &
@@ -20,7 +19,11 @@ vault kv put secret/app/config POSTGRES_DB="$POSTGRES_DB" \
                                 POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
                                 POSTGRES_HOST="$POSTGRES_HOST" \
                                 POSTGRES_PORT="$POSTGRES_PORT" \
-								DJANGO_SECRET_KEY="$DJANGO_SECRET_KEY"
+								DJANGO_SECRET_KEY="$DJANGO_SECRET_KEY" \
+                                GF_SECURITY_ADMIN_USER="$GF_SECURITY_ADMIN_USER" \
+                                GF_SECURITY_ADMIN_PASSWORD="$GF_SECURITY_ADMIN_PASSWORD" \
+                                EMAIL_HOST_USER="$EMAIL_HOST_USER" \
+                                EMAIL_HOST_PASSWORD="$EMAIL_HOST_PASSWORD"
 
 # list all secrets
 vault kv get secret/app/config
