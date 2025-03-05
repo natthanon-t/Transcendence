@@ -32,6 +32,9 @@
 	"have account": "Already have an account?",
 	
 	"username-empty-error": "Username cannot be empty",
+	"username-space-error": "Username cannot be space",
+	"alias-empty-error": "alias cannot be empty",
+	"alias-space-error": "alias cannot be space",
 	"e-mail-empty-error": "Email cannot be empty",
 	"e-mail-invalid-error": "Invalid email address",
 	"password-empty-error": "Password cannot be empty",
