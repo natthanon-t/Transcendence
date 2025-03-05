@@ -53,6 +53,12 @@ class CustomUser(AbstractUser):
 
 	def __str__(self):
 		return self.username
+      
+	def get_display_name(self):
+		"""
+        Returns the user's display name (alias if set, otherwise username)
+        """
+		return self.alias if self.alias else self.username
 
 #### TOURNAMENT ####
 class Tournament(models.Model):

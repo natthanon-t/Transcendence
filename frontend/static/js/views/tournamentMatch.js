@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import "../components/TournamentPongGame.js";
+import { getText } from "../utils/languages.js"; // Import getText function
 
 function getCookie(name) {
     let cookieValue = null;
@@ -26,11 +27,18 @@ export default class extends AbstractView {
     }
     
     async getHtml() {
+        // Get translations for static content
+        const tournamentMatchText = getText('tournament-match') || 'Tournament Match';
+        const loadingMatchDataText = getText('loading-match-data') || 'Loading match data...';
+        const backToTournamentText = getText('back-to-tournament') || 'Back to Tournament';
+        const restartMatchText = getText('restart-match') || 'Restart Match';
+        const submitResultText = getText('submit-result') || 'Submit Result';
+        
         return `
             <div class="full-height d-flex flex-column align-items-center justify-content-center">
                 <div id="match-info" class="glass p-3 mb-3 text-white text-center" style="width: 800px;">
-                    <h3>Tournament Match</h3>
-                    <div id="match-players" class="mb-2">Loading match data...</div>
+                    <h3 data-translate="tournament-match">${tournamentMatchText}</h3>
+                    <div id="match-players" class="mb-2" data-translate="loading-match-data">${loadingMatchDataText}</div>
                 </div>
                 
                 <div id="game-container">
@@ -42,13 +50,13 @@ export default class extends AbstractView {
                     <!-- Back to Tournament Button -->
                     <a id="back-btn" role="button" class="btn btn-lg glass text-white d-flex align-items-center justify-content-center" href="#">
                         <img src="static/assets/UI/icons/back-arrow.svg" alt="Back to Tournament" width="24" height="24">
-                        <span class="ms-2">Back to Tournament</span>
+                        <span class="ms-2" data-translate="back-to-tournament">${backToTournamentText}</span>
                     </a>
                     
                     <!-- Restart Match Button -->
                     <a id="restart-btn" role="button" class="btn btn-lg glass text-white d-flex align-items-center justify-content-center">
                         <img src="static/assets/UI/icons/restart.svg" alt="Restart Match" width="24" height="24">
-                        <span class="ms-2">Restart Match</span>
+                        <span class="ms-2" data-translate="restart-match">${restartMatchText}</span>
                     </a>
                 </div>
                 
@@ -56,7 +64,7 @@ export default class extends AbstractView {
                 <div id="submit-btn-container" class="mt-4" style="display: none;">
                     <a id="submit-btn" role="button" class="btn btn-lg glass text-white d-flex align-items-center justify-content-center">
                         <img src="static/assets/UI/icons/profile.svg" alt="Submit Result" width="24" height="24">
-                        <span class="ms-2">Submit Result</span>
+                        <span class="ms-2" data-translate="submit-result">${submitResultText}</span>
                     </a>
                 </div>
             </div>
@@ -70,7 +78,8 @@ export default class extends AbstractView {
         this.tournamentId = urlParams.get('tournamentId');
         
         if (!this.matchId) {
-            this.showError("No match ID provided");
+            const errorText = getText('no-match-id') || "No match ID provided";
+            this.showError(errorText);
             return;
         }
         
@@ -109,11 +118,15 @@ export default class extends AbstractView {
             });
             
             if (!response.ok) {
-                throw new Error(`Failed to load match data: ${response.status}`);
+                const errorText = getText('fetch-match-error') || "Failed to load match data";
+                throw new Error(`${errorText}: ${response.status}`);
             }
             
             const data = await response.json();
             this.matchData = data;
+            console.log("==== MATCH DATA RESPONSE ====");
+            console.log(JSON.stringify(data, null, 2));
+            console.log("=============================");
             
             // Update UI
             this.updateMatchInfo(data);
@@ -134,13 +147,21 @@ export default class extends AbstractView {
             const player1Name = this.getPlayerName(match.player1);
             const player2Name = this.getPlayerName(match.player2);
             
+            // Get translations
+            const roundText = getText('round') || 'Round';
+            const matchText = getText('match') || 'Match';
+            const vsText = getText('vs') || 'vs';
+            const matchCompletedText = getText('match-completed') || 'This match has already been completed.';
+            const resultText = getText('result') || 'Result';
+            const winnerText = getText('winner') || 'Winner';
+            
             matchPlayersElement.innerHTML = `
                 <div class="mb-2">
-                    <strong>Round ${match.round_number}</strong> - Match ${match.match_number + 1}
+                    <strong>${roundText} ${match.round_number}</strong> - ${matchText} ${match.match_number + 1}
                 </div>
                 <div class="d-flex justify-content-center align-items-center gap-3">
                     <span class="h4">${player1Name}</span>
-                    <span class="h5">vs</span>
+                    <span class="h5">${vsText}</span>
                     <span class="h4">${player2Name}</span>
                 </div>
             `;
@@ -148,9 +169,9 @@ export default class extends AbstractView {
             if (match.completed) {
                 matchPlayersElement.innerHTML += `
                     <div class="alert alert-warning mt-2">
-                        This match has already been completed.
-                        <div>Result: ${player1Name} ${match.player1_score} - ${match.player2_score} ${player2Name}</div>
-                        <div>Winner: ${this.getPlayerName(match.winner)}</div>
+                        ${matchCompletedText}
+                        <div>${resultText}: ${player1Name} ${match.player1_score} - ${match.player2_score} ${player2Name}</div>
+                        <div>${winnerText}: ${this.getPlayerName(match.winner)}</div>
                     </div>
                 `;
             }
@@ -173,16 +194,8 @@ export default class extends AbstractView {
         gameElement.style.display = 'block';
         gameElement.style.margin = '0 auto';
         
-        // Set players and match data
-        if (this.matchData.player1 && this.matchData.player2) {
-            const player1Name = this.getPlayerName(this.matchData.player1);
-            const player2Name = this.getPlayerName(this.matchData.player2);
-            
-            // Set these as properties on the game element
-            gameElement.player1Name = player1Name;
-            gameElement.player2Name = player2Name;
-            gameElement.matchData = this.matchData;
-        }
+        // Set match data
+        gameElement.matchData = this.matchData;
         
         // Add event listener for when the game ends
         gameElement.addEventListener('gameend', (event) => {
@@ -193,10 +206,14 @@ export default class extends AbstractView {
             // Auto-submit after a short delay
             if (event.detail.autoSubmit) {
                 const matchPlayersElement = document.getElementById('match-players');
+                
+                // Get translation
+                const autoSubmittingText = getText('auto-submitting') || 'Auto-submitting result...';
+                
                 if (matchPlayersElement) {
                     matchPlayersElement.innerHTML += `
                         <div class="alert alert-info mt-2">
-                            Auto-submitting result...
+                            ${autoSubmittingText}
                         </div>
                     `;
                 }
@@ -208,11 +225,15 @@ export default class extends AbstractView {
                 // Only show the submit button if auto-submit is not enabled
                 const submitBtnContainer = document.getElementById('submit-btn-container');
                 const submitBtn = document.getElementById('submit-btn');
+                
+                // Get translation
+                const submitResultText = getText('submit-result') || 'Submit Result';
+                
                 if (submitBtnContainer && submitBtn) {
                     submitBtnContainer.style.display = 'block';
                     submitBtn.innerHTML = `
                         <img src="static/assets/UI/icons/profile.svg" alt="Submit Result" width="24" height="24">
-                        <span class="ms-2">Submit Result (${event.detail.player1Score} - ${event.detail.player2Score})</span>
+                        <span class="ms-2" data-translate="submit-result">${submitResultText} (${event.detail.player1Score} - ${event.detail.player2Score})</span>
                     `;
                 }
             }
@@ -226,15 +247,29 @@ export default class extends AbstractView {
     }
     
     getPlayerName(player) {
-        if (!player) return 'Unknown';
-        return player.username || player.guest_name || 'Player';
+        if (!player) return getText('unknown') || 'Unknown';
+        
+        // Simply use the display_name that's already provided by the API
+        if (player.display_name) {
+            return player.display_name;
+        }
+        
+        // Fallbacks in case display_name isn't available
+        return player.username || player.guest_name || (getText('unknown') || 'Unknown');
     }
     
     async submitMatchResult(isAutoSubmit = false) {
         if (!this.matchId || !this.gameResult || !this.matchData) {
-            this.showError("No match data or game result available");
+            const errorText = getText('no-match-data') || "No match data or game result available";
+            this.showError(errorText);
             return;
         }
+        
+        // Get translations
+        const errorSubmittingText = getText('error-submitting') || 'Error submitting match result';
+        const autoSubmitFailedText = getText('auto-submit-failed') || 'Auto-submission failed. Please try manual submission.';
+        const manualSubmitText = getText('manual-submit') || 'Manual Submit';
+        const matchSubmittedText = getText('match-submitted') || 'Match result submitted successfully!';
         
         // If auto-submission fails, show the manual submit button
         const handleSubmissionError = (error) => {
@@ -249,14 +284,14 @@ export default class extends AbstractView {
                     submitBtnContainer.style.display = 'block';
                     submitBtn.innerHTML = `
                         <img src="static/assets/UI/icons/profile.svg" alt="Submit Result" width="24" height="24">
-                        <span class="ms-2">Manual Submit (${this.gameResult.player1Score} - ${this.gameResult.player2Score})</span>
+                        <span class="ms-2">${manualSubmitText} (${this.gameResult.player1Score} - ${this.gameResult.player2Score})</span>
                     `;
                     
                     const matchPlayersElement = document.getElementById('match-players');
                     if (matchPlayersElement) {
                         matchPlayersElement.innerHTML += `
                             <div class="alert alert-warning mt-2">
-                                Auto-submission failed. Please try manual submission.
+                                ${autoSubmitFailedText}
                             </div>
                         `;
                     }
@@ -339,7 +374,7 @@ export default class extends AbstractView {
             if (matchPlayersElement) {
                 matchPlayersElement.innerHTML += `
                     <div class="alert alert-success mt-2">
-                        Match result submitted successfully!
+                        ${matchSubmittedText}
                     </div>
                 `;
             }
@@ -367,6 +402,9 @@ export default class extends AbstractView {
     showError(message) {
         const matchPlayersElement = document.getElementById('match-players');
         if (matchPlayersElement) {
+            // Get translation for Error
+            const errorText = getText('error') || 'Error';
+            
             matchPlayersElement.innerHTML = `
                 <div class="alert alert-danger">
                     ${message}

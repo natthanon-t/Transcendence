@@ -1,7 +1,7 @@
-// static/js/views/1v1Game.js
 import AbstractView from "./AbstractView.js";
 import "../components/TournamentPongGame.js";
 import { BASE_URL } from "../index.js";
+import { getText } from "../utils/languages.js";
 
 function getCookie(name) {
     let cookieValue = null;
@@ -25,15 +25,24 @@ export default class extends AbstractView {
     }
     
     async getHtml() {
+        // Get translations for static content
+        const oneVsOneMatchText = getText('1v1-match') || '1 vs 1 Match';
+        const player1Text = getText('player-1') || 'Player 1';
+        const vsText = getText('vs') || 'vs';
+        const player2Text = getText('player-2') || 'Player 2';
+        const backText = getText('back') || 'Back';
+        const restartMatchText = getText('restart-match') || 'Restart Match';
+        const submitResultText = getText('submit-result') || 'Submit Result';
+        
         return `
             <div class="full-height d-flex flex-column align-items-center justify-content-center">
                 <div id="match-info" class="glass p-3 mb-3 text-white text-center" style="width: 800px;">
-                    <h3>1 vs 1 Match</h3>
+                    <h3 data-translate="1v1-match">${oneVsOneMatchText}</h3>
                     <div id="match-players" class="mb-2">
                         <div class="d-flex justify-content-center align-items-center gap-3">
-                            <span class="h4" id="player1-name">Player 1</span>
-                            <span class="h5">vs</span>
-                            <span class="h4" id="player2-name">Player 2</span>
+                            <span class="h4" id="player1-name">${player1Text}</span>
+                            <span class="h5" data-translate="vs">${vsText}</span>
+                            <span class="h4" id="player2-name">${player2Text}</span>
                         </div>
                     </div>
                 </div>
@@ -45,17 +54,17 @@ export default class extends AbstractView {
                 <div class="d-flex justify-content-center mt-4 gap-4">
                     <button id="back-btn" class="btn btn-lg btn-filled">
                         <img src="static/assets/UI/icons/back-arrow.svg" alt="Back" width="24" height="24">
-                        <span class="ms-2">Back</span>
+                        <span class="ms-2" data-translate="back">${backText}</span>
                     </button>
                     
                     <button id="restart-btn" class="btn btn-lg btn-filled">
                         <img src="static/assets/UI/icons/restart.svg" alt="Restart" width="24" height="24">
-                        <span class="ms-2">Restart Match</span>
+                        <span class="ms-2" data-translate="restart-match">${restartMatchText}</span>
                     </button>
                     
                     <button id="submit-btn" class="btn btn-lg btn-filled" style="display: none;">
                         <img src="static/assets/UI/icons/profile.svg" alt="Submit Result" width="24" height="24">
-                        <span class="ms-2">Submit Result</span>
+                        <span class="ms-2" data-translate="submit-result">${submitResultText}</span>
                     </button>
                 </div>
             </div>
@@ -63,10 +72,13 @@ export default class extends AbstractView {
     }
     
     loadJS() {
+        // Get translation for error message
+        const noGameSetupText = getText('no-game-setup') || "No game setup found. Please return to the setup page.";
+        
         // Load game setup from sessionStorage
         const gameSetupJson = sessionStorage.getItem('1v1GameSetup');
         if (!gameSetupJson) {
-            this.showError("No game setup found. Please return to the setup page.");
+            this.showError(noGameSetupText);
             return;
         }
         
@@ -101,11 +113,14 @@ export default class extends AbstractView {
         const player1NameEl = document.getElementById('player1-name');
         const player2NameEl = document.getElementById('player2-name');
         
+        // Get translation for "You"
+        const youText = getText('you') || 'You';
+        
         // Set player 1 name
         if (this.gameSetup.player1.type === 'guest') {
             player1NameEl.textContent = this.gameSetup.player1.name;
         } else {
-            player1NameEl.textContent = this.gameSetup.player1.username || 'You';
+            player1NameEl.textContent = this.gameSetup.player1.username || youText;
             this.currentUser = {
                 username: this.gameSetup.player1.username,
                 id: this.gameSetup.player1.id
@@ -136,10 +151,13 @@ export default class extends AbstractView {
         gameElement.style.display = 'block';
         gameElement.style.margin = '0 auto';
         
+        // Get translation for "You"
+        const youText = getText('you') || 'You';
+        
         // Set player names
         const player1Name = this.gameSetup.player1.type === 'guest' ? 
             this.gameSetup.player1.name : 
-            (this.gameSetup.player1.username || 'You');
+            (this.gameSetup.player1.username || youText);
             
         const player2Name = this.gameSetup.player2.type === 'guest' ? 
             this.gameSetup.player2.name : 
@@ -157,23 +175,30 @@ export default class extends AbstractView {
             // Store the result for submission
             this.gameResult = event.detail;
             
+            // Get translation for submit result
+            const submitResultText = getText('submit-result') || 'Submit Result';
+            
             // Show the submit button
             const submitBtn = document.getElementById('submit-btn');
             if (submitBtn) {
                 submitBtn.style.display = 'inline-flex';
                 submitBtn.innerHTML = `
                     <img src="static/assets/UI/icons/profile.svg" alt="Submit Result" width="24" height="24">
-                    <span class="ms-2">Submit Result (${event.detail.player1Score} - ${event.detail.player2Score})</span>
+                    <span class="ms-2">${submitResultText} (${event.detail.player1Score} - ${event.detail.player2Score})</span>
                 `;
             }
             
             // Auto-submit after a short delay
             if (event.detail.autoSubmit) {
                 const matchPlayersElement = document.getElementById('match-players');
+                
+                // Get translation for auto-submitting message
+                const autoSubmittingText = getText('auto-submitting') || 'Auto-submitting result...';
+                
                 if (matchPlayersElement) {
                     matchPlayersElement.innerHTML += `
                         <div class="alert alert-info mt-2">
-                            Auto-submitting result...
+                            ${autoSubmittingText}
                         </div>
                     `;
                 }
@@ -191,8 +216,11 @@ export default class extends AbstractView {
     }
     
     async submitMatchResult() {
+        // Get translation for error message
+        const noGameResultText = getText('no-game-result') || "No game result available";
+        
         if (!this.gameResult) {
-            this.showError("No game result available");
+            this.showError(noGameResultText);
             return;
         }
         
@@ -279,12 +307,15 @@ export default class extends AbstractView {
                 throw new Error(`Failed to record match: ${errorText}`);
             }
             
+            // Get translation for success message
+            const matchRecordedText = getText('match-submitted') || 'Match result recorded successfully!';
+            
             // Show success message
             const matchPlayersElement = document.getElementById('match-players');
             if (matchPlayersElement) {
                 matchPlayersElement.innerHTML += `
                     <div class="alert alert-success mt-2">
-                        Match result recorded successfully!
+                        ${matchRecordedText}
                     </div>
                 `;
             }
@@ -306,6 +337,9 @@ export default class extends AbstractView {
     showError(message) {
         const matchPlayersElement = document.getElementById('match-players');
         if (matchPlayersElement) {
+            // Get translation for error heading
+            const errorText = getText('error') || 'Error';
+            
             matchPlayersElement.innerHTML = `
                 <div class="alert alert-danger">
                     ${message}

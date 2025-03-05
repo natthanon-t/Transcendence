@@ -1,4 +1,6 @@
 import AbstractView from "./AbstractView.js";
+import { getDisplayName } from "../utils/user-display-component.js";
+import { getText } from "../utils/languages.js"; // Import getText function
 
 export default class extends AbstractView {
     constructor() {
@@ -9,7 +11,16 @@ export default class extends AbstractView {
     }
     
     async getHtml() {
-        // Same HTML structure as your previous code
+        // Get translations for the dropdown values and button text
+        const guestText = getText('guest') || 'Guest';
+        const userText = getText('user') || 'User';
+        const enterPlayerNameText = getText('enter-player-name') || 'Enter player name';
+        const addPlayerBtnText = getText('add') || 'Add';
+        const beginTournamentText = getText('begin-tournament') || 'Begin Tournament';
+        const editAliasText = getText('edit-alias') || 'Edit Alias';
+        const cancelText = getText('cancel') || 'Cancel';
+        const saveText = getText('save') || 'Save';
+        
         return `
             <div class="full-height d-flex flex-column align-items-center justify-content-center">
                 <div class="container container-tournament p-5 mb-5">
@@ -30,12 +41,12 @@ export default class extends AbstractView {
                             <p class="h4" data-translate="add-player">Add Player</p>
                             <div class="mb-3">
                                 <select id="player-type" class="form-select mb-2">
-                                    <option value="guest">Guest</option>
-                                    <option value="user">User</option>
+                                    <option value="guest" data-translate="guest">${guestText}</option>
+                                    <option value="user" data-translate="user">${userText}</option>
                                 </select>
-                                <input type="text" id="player-name" class="form-control" placeholder="Enter player name">
+                                <input type="text" id="player-name" class="form-control" placeholder="${enterPlayerNameText}" data-translate-placeholder="enter-player-name">
                             </div>
-                            <button id="add-player" class="btn btn-filled">Add Player</button>
+                            <button id="add-player" class="btn btn-filled" data-translate="add">${addPlayerBtnText}</button>
                         </div>
                     </div>
                     
@@ -48,7 +59,7 @@ export default class extends AbstractView {
                             </div>
                             <div class="p-2 pt-1" id="online-users-list">
                                 <!-- Online users will be populated here -->
-                                <div class="text-center">Loading online users...</div>
+                                <div class="text-center" data-translate="loading-online-users">Loading online users...</div>
                             </div>
                         </div>
                     </div>
@@ -69,7 +80,7 @@ export default class extends AbstractView {
                     <!-- Tournament Controls -->
                     <div class="row justify-content-center mt-4">
                         <div class="col-md-6 d-flex justify-content-center">
-                            <button id="start-tournament" class="btn btn-filled" disabled>Begin Tournament</button>
+                            <button id="start-tournament" class="btn btn-filled" disabled data-translate="begin-tournament">${beginTournamentText}</button>
                         </div>
                     </div>
                     
@@ -79,6 +90,26 @@ export default class extends AbstractView {
                             <a role="button" class="return-btn btn btn-lg text-light text-center d-flex align-items-center justify-content-center p-3 mt-5" href="/selectgame" data-link>
                                 <img src="static/assets/UI/icons/game.svg" alt="menugmae Button" id="gamememnu">
                             </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="editAliasModal" tabindex="-1" aria-labelledby="editAliasModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content glass-modal-bg text-white">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title" id="editAliasModalLabel" data-translate="edit-alias">${editAliasText}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="tournament-alias" maxlength="12" placeholder="${enterPlayerNameText}" data-translate-placeholder="enter-alias">
+                                    <div id="tournament-alias-error" class="text-danger mt-1"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">${cancelText}</button>
+                                <button type="button" class="btn btn-filled" id="save-alias-btn" data-translate="save">${saveText}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -112,9 +143,7 @@ export default class extends AbstractView {
         
         // Load online users
         this.loadOnlineUsers(onlineUsersList);
-        
-        // No need to handle the cancel button as we've replaced it with a direct link
-        
+                
         // Add player to the tournament
         if (addPlayerBtn) {
             addPlayerBtn.addEventListener('click', async () => {
@@ -128,7 +157,7 @@ export default class extends AbstractView {
                 
                 if (this.players.length >= 8) {
                     console.log("Cannot add player. Max players reached.");
-                    alert("Maximum of 8 players reached");
+                    alert(getText('max-players-reached') || "Maximum of 8 players reached");
                     return;
                 }
                 
@@ -141,7 +170,7 @@ export default class extends AbstractView {
                         );
                         
                         if (isDuplicate) {
-                            alert("A player with this name is already in the tournament");
+                            alert(getText('player-already-exists') || "A player with this name is already in the tournament");
                             return;
                         }
                         
@@ -149,7 +178,7 @@ export default class extends AbstractView {
                         const exists = await this.verifyUserExists(name);
                         
                         if (!exists) {
-                            alert(`User "${name}" does not exist`);
+                            alert(getText('user-does-not-exist').replace('{username}', name) || `User "${name}" does not exist`);
                             return;
                         }
                         
@@ -159,7 +188,7 @@ export default class extends AbstractView {
                         
                     } catch (error) {
                         console.error("Error verifying user:", error);
-                        alert("Error verifying user. Please try again.");
+                        alert(getText('error-verifying-user') || "Error verifying user. Please try again.");
                     }
                 } else {
                     // For guest players, just check for duplicates and add them
@@ -168,7 +197,7 @@ export default class extends AbstractView {
                     );
                     
                     if (isDuplicate) {
-                        alert("A player with this name is already in the tournament");
+                        alert(getText('player-already-exists') || "A player with this name is already in the tournament");
                         return;
                     }
                     
@@ -185,7 +214,7 @@ export default class extends AbstractView {
                     console.log("Begin tournament clicked");
                     
                     if (this.players.length < 3) {
-                        alert("You need at least 3 players to start a tournament");
+                        alert(getText('min-players-required') || "You need at least 3 players to start a tournament");
                         return;
                     }
                     
@@ -227,7 +256,7 @@ export default class extends AbstractView {
                     window.location.href = `/tournamentgame?id=${data.tournament_id}`;
                 } catch (error) {
                     console.error('Error creating tournament:', error);
-                    alert("Error creating tournament. Please try again.");
+                    alert(getText('error-creating-tournament') || "Error creating tournament. Please try again.");
                 }
             });
         }
@@ -254,6 +283,9 @@ export default class extends AbstractView {
                 
                 // Add current user to players list
                 this.addPlayer(this.currentUser.username, 'user');
+                
+                // Setup alias editing functionality
+                this.setupAliasEditing();
             }
             
         } catch (error) {
@@ -315,48 +347,45 @@ export default class extends AbstractView {
             }
             
             const users = await response.json();
-            
-            // Debug: Log all users to inspect the data
-            console.log("All users from API:", users);
-            
+            console.log("==== USERS API RESPONSE ====");
+            console.log(JSON.stringify(users, null, 2));
+            console.log("===========================");
             // Get current user's username
             const currentUsername = this.currentUser ? this.currentUser.username : null;
-            console.log("Current username:", currentUsername);
             
             // Filter for online users and exclude current user (already added to tournament)
-            // Store usernames we've already processed to avoid duplicates
             const processedUsernames = new Set();
             const onlineUsers = [];
             
             for (const user of users) {
-                // Debug the user object
-                console.log(`Processing user: ${user.username}, online: ${user.online_status}`);
-                
                 // Skip if not online, is current user, or already processed
                 if (
                     !user.online_status || 
                     user.username === currentUsername || 
                     processedUsernames.has(user.username.toLowerCase())
                 ) {
-                    console.log(`Skipping user: ${user.username}`);
                     continue;
                 }
                 
                 // Add to processed set and online users array
                 processedUsernames.add(user.username.toLowerCase());
                 onlineUsers.push(user);
-                console.log(`Added to online users: ${user.username}`);
             }
             
-            console.log(`Found ${onlineUsers.length} unique online users after filtering`);
-            
             if (onlineUsers.length === 0) {
-                onlineUsersList.innerHTML = '<div class="text-center">No online users available</div>';
+                const noUsersText = getText('no-online-users') || 'No online users available';
+                onlineUsersList.innerHTML = `<div class="text-center">${noUsersText}</div>`;
                 return;
             }
             
             // Create elements for each online user
-            onlineUsersList.innerHTML = '<div class="text-center">Processing online users...</div>';
+            const processingText = getText('processing-online-users') || 'Processing online users...';
+            onlineUsersList.innerHTML = `<div class="text-center">${processingText}</div>`;
+            
+            // Get translations for button text
+            const addText = getText('add') || 'Add';
+            const addedText = getText('added') || 'Added';
+            const onlineText = getText('online') || 'Online';
             
             // Clear the placeholder
             setTimeout(() => {
@@ -364,19 +393,20 @@ export default class extends AbstractView {
                 
                 // Manually create elements for each online user
                 onlineUsers.forEach(user => {
-                    // Debug the user being added to UI
-                    console.log(`Adding UI element for user: ${user.username}`);
-                    
                     // Check if user is already in the tournament - case insensitive check
                     const isAlreadyAdded = this.players.some(
                         player => player.type === 'user' && player.name.toLowerCase() === user.username.toLowerCase()
                     );
                     
+                    // Get the display name using our utility function
+                    const displayName = user.alias || user.username;
+                    
                     // Create the user element
                     const userElement = document.createElement('div');
                     userElement.className = 'd-flex justify-content-between align-items-center p-2 mb-2 user-element tabbable';
                     userElement.tabIndex = 0;
-                    userElement.dataset.username = user.username; // Add data attribute for debugging
+                    userElement.dataset.username = user.username;
+                    userElement.dataset.displayName = displayName; // Store display name for later use
                     
                     // Create user info display
                     const userInfo = document.createElement('div');
@@ -388,44 +418,45 @@ export default class extends AbstractView {
                     profilePic.alt = 'profile picture';
                     profilePic.className = 'profile-pic-list';
                     
-                    // Determine display name - show alias if present, otherwise username
-                    const displayName = user.alias || user.username;
-                    
-                    // Create username text
-                    const username = document.createElement('span');
-                    username.className = 'ms-2';
-                    username.textContent = displayName;
+                    // Create username text - show displayName instead of username
+                    const usernameElem = document.createElement('span');
+                    usernameElem.className = 'ms-2';
+                    usernameElem.textContent = displayName;
                     
                     // Create online indicator
                     const onlineIndicator = document.createElement('span');
                     onlineIndicator.className = 'ms-2 badge bg-success';
-                    onlineIndicator.textContent = 'Online';
+                    onlineIndicator.textContent = onlineText;
+                    onlineIndicator.setAttribute('data-translate', 'online');
                     
                     // Assemble user info
                     userInfo.appendChild(profilePic);
-                    userInfo.appendChild(username);
+                    userInfo.appendChild(usernameElem);
                     userInfo.appendChild(onlineIndicator);
                     
                     // Create add button
                     const addButton = document.createElement('button');
                     addButton.className = 'btn btn-sm btn-filled';
-                    addButton.textContent = isAlreadyAdded ? 'Added' : 'Add';
+                    addButton.textContent = isAlreadyAdded ? addedText : addText;
+                    addButton.setAttribute('data-translate', isAlreadyAdded ? 'added' : 'add');
                     addButton.disabled = isAlreadyAdded;
                     
                     if (!isAlreadyAdded) {
                         addButton.addEventListener('click', () => {
-                            console.log(`Adding online user: ${user.username}`);
-                            this.addPlayer(user.username, 'user');
-                            addButton.textContent = 'Added';
+                            console.log(`Adding online user: ${user.username} (${displayName})`);
+                            this.addPlayer(user.username, 'user', displayName);
+                            addButton.textContent = addedText;
+                            addButton.setAttribute('data-translate', 'added');
                             addButton.disabled = true;
                         });
                         
                         // Add keydown event for accessibility
                         userElement.addEventListener('keydown', (event) => {
                             if (event.key === 'Enter') {
-                                console.log(`Adding online user via keyboard: ${user.username}`);
-                                this.addPlayer(user.username, 'user');
-                                addButton.textContent = 'Added';
+                                console.log(`Adding online user via keyboard: ${user.username} (${displayName})`);
+                                this.addPlayer(user.username, 'user', displayName);
+                                addButton.textContent = addedText;
+                                addButton.setAttribute('data-translate', 'added');
                                 addButton.disabled = true;
                             }
                         });
@@ -441,39 +472,59 @@ export default class extends AbstractView {
                 
                 // If no elements were added, show a message
                 if (onlineUsersList.children.length === 0) {
-                    onlineUsersList.innerHTML = '<div class="text-center">No online users available</div>';
+                    const noUsersText = getText('no-online-users') || 'No online users available';
+                    onlineUsersList.innerHTML = `<div class="text-center">${noUsersText}</div>`;
                 }
-                
-                console.log(`Added ${onlineUsersList.children.length} user elements to the UI`);
             }, 100);
             
         } catch (error) {
             console.error('Error loading online users:', error);
-            onlineUsersList.innerHTML = '<div class="text-center">Error loading online users</div>';
+            const errorText = getText('error-loading-users') || 'Error loading online users';
+            onlineUsersList.innerHTML = `<div class="text-center">${errorText}</div>`;
         }
     }
     
-    addPlayer(name, type) {
+    addPlayer(name, type, explicitDisplayName = null) {
         // Check for duplicates across all player types (case insensitive)
         const isDuplicate = this.players.some(player => 
             player.name.toLowerCase() === name.toLowerCase()
         );
         
         if (isDuplicate) {
-            alert("A player with this name is already in the tournament");
+            const duplicateText = getText('player-already-exists') || "A player with this name is already in the tournament";
+            alert(duplicateText);
             return;
         }
-
-        // If this is the current user, check if they have an alias to display
-        let displayName = name;
-        if (type === 'user' && this.currentUser && this.currentUser.username === name && this.currentUser.alias) {
-            displayName = this.currentUser.alias;
+    
+        // Determine display name
+        let displayName = explicitDisplayName;
+        
+        // If no explicit display name was provided
+        if (!displayName) {
+            if (type === 'user') {
+                // For registered users
+                if (this.currentUser && this.currentUser.username === name) {
+                    // It's the current user
+                    displayName = this.currentUser.alias || name;
+                } else {
+                    // Try to find user in the online users list
+                    const userElem = document.querySelector(`.user-element[data-username="${name}"]`);
+                    if (userElem && userElem.dataset.displayName) {
+                        displayName = userElem.dataset.displayName;
+                    } else {
+                        displayName = name;
+                    }
+                }
+            } else {
+                // For guest players
+                displayName = name;
+            }
         }
         
-        // Add to players array with original name (for server) and display name (for UI)
+        // Add to players array
         this.players.push({
-            name: name,         // Original name/username (sent to server)
-            displayName: displayName, // Display name (for UI only)
+            name: name,            // Original name/username (for server)
+            displayName: displayName, // Display name (for UI)
             type: type
         });
         
@@ -482,7 +533,7 @@ export default class extends AbstractView {
         // Update UI
         this.updatePlayersList();
         
-        // Refresh online users list to update "Added" status
+        // Refresh online users list
         this.loadOnlineUsers(document.getElementById('online-users-list'));
         
         // Update start button state
@@ -503,16 +554,21 @@ export default class extends AbstractView {
         // Clear the current list
         playersList.innerHTML = '';
         
+        // Get translations for user and guest labels
+        const userText = getText('user') || 'User';
+        const guestText = getText('guest') || 'Guest';
+        
         // Add each player to the list
         this.players.forEach((player, index) => {
             const li = document.createElement('li');
             li.className = 'text-white mb-2 d-flex justify-content-between align-items-center';
             
-            // Use displayName for UI if available
+            // Use displayName for UI
             const nameToShow = player.displayName || player.name;
+            const typeLabel = player.type === 'user' ? userText : guestText;
             
             li.innerHTML = `
-                <span>${nameToShow} (${player.type === 'user' ? 'User' : 'Guest'})</span>
+                <span>${nameToShow} (${typeLabel})</span>
                 <button class="btn btn-sm btn-filled remove-player" data-index="${index}">
                     <img src="static/assets/UI/icons/minus.svg" alt="Remove" width="20" height="20">
                 </button>
@@ -527,7 +583,7 @@ export default class extends AbstractView {
                 this.players.splice(index, 1);
                 this.updatePlayersList();
                 
-                // Refresh online users list to update "Added" status
+                // Refresh online users list
                 this.loadOnlineUsers(document.getElementById('online-users-list'));
                 
                 const startBtn = document.getElementById('start-tournament');
@@ -536,6 +592,162 @@ export default class extends AbstractView {
                 }
             });
         });
+    }
+
+    validateAlias(aliasValue) {
+        const aliasErrorElem = document.getElementById('alias-error');
+        
+        // Clear previous error
+        aliasErrorElem.innerHTML = '&nbsp;';
+        
+        // Check if the alias is too long (shouldn't happen due to maxlength but just in case)
+        if (aliasValue.length > 12) {
+            const tooLongText = getText('alias-too-long') || 'Alias must be 12 characters or less';
+            aliasErrorElem.textContent = tooLongText;
+            return false;
+        }
+        
+        // Empty alias is allowed (it will default to username)
+        return true;
+    }
+
+    async updateUserAlias(newAlias) {
+        try {
+            // Validate alias length
+            if (newAlias.length > 12) {
+                const tooLongText = getText('alias-too-long') || 'Alias must be 12 characters or less';
+                document.getElementById('alias-error').textContent = tooLongText;
+                return false;
+            }
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('alias', newAlias);
+            
+            // Send update request
+            const response = await fetch('/api/update_user', {
+                method: 'PUT',
+                body: formData,
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                const data = await response.json();
+                if (data.alias) {
+                    document.getElementById('alias-error').textContent = data.alias[0];
+                } else {
+                    const errorText = getText('error-updating-alias') || 'Error updating alias';
+                    document.getElementById('alias-error').textContent = errorText;
+                }
+                return false;
+            }
+            
+            // Update was successful
+            return true;
+        } catch (error) {
+            console.error('Error updating alias:', error);
+            const errorText = getText('error-updating-alias') || 'Error updating alias';
+            document.getElementById('alias-error').textContent = errorText;
+            return false;
+        }
+    }
+    
+    setupAliasEditing() {
+        // Find the current user in the players list
+        const currentPlayerItem = document.querySelector('#players-list li');
+        
+        if (!currentPlayerItem) {
+            console.error("Current player element not found!");
+            return;
+        }
+        
+        // Get translation for Edit Alias button
+        const editAliasText = getText('edit-alias') || 'Edit Alias';
+        
+        // Add edit button to the list item
+        const editButton = document.createElement('button');
+        editButton.className = 'btn btn-sm btn-outline-light ms-2';
+        editButton.textContent = editAliasText;
+        editButton.setAttribute('data-translate', 'edit-alias');
+        editButton.style.fontSize = '0.75rem';
+        editButton.style.padding = '2px 8px';
+        editButton.style.marginLeft = '8px';
+        
+        // Add button next to the player name
+        const nameSpan = currentPlayerItem.querySelector('span');
+        nameSpan.appendChild(editButton);
+        
+        // Set up the edit button click handler
+        editButton.addEventListener('click', () => {
+            const aliasInput = document.getElementById('tournament-alias');
+            const saveButton = document.getElementById('save-alias-btn');
+            const errorElement = document.getElementById('tournament-alias-error');
+            
+            // Clear any previous errors
+            errorElement.textContent = '';
+            
+            // Set the current value in the input
+            aliasInput.value = this.currentUser.alias || '';
+            
+            // Show the modal using Bootstrap's API
+            const modal = new bootstrap.Modal(document.getElementById('editAliasModal'));
+            modal.show();
+            
+            // Set up save button handler
+            saveButton.onclick = async () => {
+                const newAlias = aliasInput.value.trim();
+                
+                // Simple validation
+                if (newAlias.length > 12) {
+                    const tooLongText = getText('alias-too-long') || 'Alias must be 12 characters or less';
+                    errorElement.textContent = tooLongText;
+                    return;
+                }
+                
+                // Update alias via API
+                const formData = new FormData();
+                formData.append('alias', newAlias);
+                
+                try {
+                    const response = await fetch('/api/update_user', {
+                        method: 'PUT',
+                        body: formData,
+                        credentials: 'include'
+                    });
+                    
+                    if (!response.ok) {
+                        const data = await response.json();
+                        errorElement.textContent = data.alias ? data.alias[0] : (getText('error-updating-alias') || 'Error updating alias');
+                        return;
+                    }
+                    
+                    // Success - update local data
+                    this.currentUser.alias = newAlias;
+                    this.updateCurrentUserInPlayersList();
+                    modal.hide();
+                    
+                } catch (error) {
+                    console.error('Error updating alias:', error);
+                    const errorText = getText('error-updating-alias') || 'Error updating alias';
+                    errorElement.textContent = errorText;
+                }
+            };
+        });
+    }
+    
+    updateCurrentUserInPlayersList() {
+        // Find the current user in the players array
+        const currentUserIndex = this.players.findIndex(
+            player => player.type === 'user' && player.name === this.currentUser.username
+        );
+        
+        if (currentUserIndex !== -1) {
+            // Update their display name
+            this.players[currentUserIndex].displayName = this.currentUser.alias || this.currentUser.username;
+            
+            // Update the UI
+            this.updatePlayersList();
+        }
     }
     
     stopJS() {
