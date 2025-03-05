@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import "../scripts/game.js";
 // import { home } from "../scripts/home.js";
 
 export default class extends AbstractView {
