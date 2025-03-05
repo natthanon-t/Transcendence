@@ -1,10 +1,3 @@
-/**
- * UserDisplay - A utility for consistent display of user names
- * 
- * This module provides functions to handle user display names consistently 
- * across the application, properly handling aliases when available.
- */
-
 // Helper function to get the display name for a user
 export function getDisplayName(user) {
     if (!user) return "Unknown";
