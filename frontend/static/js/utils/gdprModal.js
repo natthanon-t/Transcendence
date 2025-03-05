@@ -16,9 +16,20 @@ export function showGdprModal() {
                     </div>
                     <div class="modal-body text-white">
                         <p>
-                            We take your privacy seriously. This website collects personal data for account creation,
-                            security purposes, and improving user experience. By signing up, you agree to our
-                            <a href="/privacy-policy" class="text-light">Privacy Policy</a>.
+                        ENG:
+                        We take your privacy seriously. This website collects personal data for account creation,
+                        security purposes, and improving user experience. By signing up, you agree to our
+                        </p>
+                        <p>
+                        Thai:
+                        เราให้ความสำคัญกับความเป็นส่วนตัวของคุณ เว็บไซต์นี้รวบรวมข้อมูลส่วนบุคคลเพื่อสร้างบัญชี
+                        วัตถุประสงค์ด้านความปลอดภัย และปรับปรุงประสบการณ์การใช้งานของผู้ใช้
+                        โดยการสมัครใช้งาน คุณตกลงที่จะยอมรับเงื่อนไขของเรา
+                        </p>
+                        <p>
+                        Chinese (Simplified):
+                        我们非常重视您的隐私。本网站收集个人数据用于账户创建、
+                        安全目的和提升用户体验。注册即表示您同意我们的条款。
                         </p>
                     </div>
                     <div class="modal-footer">
