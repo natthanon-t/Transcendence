@@ -118,7 +118,7 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-HOST_NAME = 'https://localhost'
+HOST_NAME = 'https://localhost:8443'
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.MD5PasswordHasher',
