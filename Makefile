@@ -96,6 +96,9 @@ loadimages:
 	@docker load -i alpine.tar
 
 run-script:
+	@echo "Waiting for 2 minutes..."
+	@sleep 120  # Sleep for 120 seconds (2 minutes)
+	@echo "Proceeding to next step..."
 	@docker exec -it $(KIBANA_CONTAINER_NAME) /bin/sh $(SCRIPT_PATH)
 	@docker start alpine-setup
 
