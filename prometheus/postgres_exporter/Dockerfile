@@ -1,4 +1,4 @@
-FROM postgres:17-bookworm
+FROM wrouesnel/postgres_exporter:latest
 USER root
 # install vault
 RUN apt-get update && \
