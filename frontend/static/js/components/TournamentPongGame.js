@@ -1,4 +1,3 @@
-// static/js/components/TournamentPongGame.js
 class TournamentPongGame extends HTMLElement {
     constructor() {
         super();
@@ -93,13 +92,14 @@ class TournamentPongGame extends HTMLElement {
     }
     
     // Getters/setters for match data
-    set matchData(data) {
-        this._matchData = data;
-        if (data && data.player1 && data.player2) {
-            this.player1Name = data.player1.user?.username || data.player1.guest_name || "Player 1";
-            this.player2Name = data.player2.user?.username || data.player2.guest_name || "Player 2";
-        }
-    }
+	set matchData(data) {
+		this._matchData = data;
+		if (data && data.player1 && data.player2) {
+			//use the display_name that's provided by the API
+			this.player1Name = data.player1.display_name || data.player1.username || data.player1.guest_name || "Player 1";
+			this.player2Name = data.player2.display_name || data.player2.username || data.player2.guest_name || "Player 2";
+		}
+	}
     
     get matchData() {
         return this._matchData;
@@ -237,28 +237,28 @@ class TournamentPongGame extends HTMLElement {
         if (this.keys["ArrowDown"]) this.player2Paddle.y = Math.min(this.player2Paddle.y + step, this.canvas.height - this.player2Paddle.height);
     }
     
-	checkForWinner() {
-		if (this.player1Score >= this.winScore || this.player2Score >= this.winScore) {
-			this.gameActive = false;
-			this.matchComplete = true;
-			
-			// Dispatch event with game result
-			const event = new CustomEvent("gameend", {
-				bubbles: true,
-				composed: true,
-				detail: {
-					player1Score: this.player1Score,
-					player2Score: this.player2Score,
-					winner: this.player1Score > this.player2Score ? 1 : 2,
-					player1Name: this.player1Name,
-					player2Name: this.player2Name,
-					autoSubmit: true // Flag to indicate auto-submit
-				}
-			});
-			
-			this.dispatchEvent(event);
-		}
-	}
+    checkForWinner() {
+        if (this.player1Score >= this.winScore || this.player2Score >= this.winScore) {
+            this.gameActive = false;
+            this.matchComplete = true;
+            
+            // Dispatch event with game result
+            const event = new CustomEvent("gameend", {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    player1Score: this.player1Score,
+                    player2Score: this.player2Score,
+                    winner: this.player1Score > this.player2Score ? 1 : 2,
+                    player1Name: this.player1Name, // This is already using display names
+                    player2Name: this.player2Name, // This is already using display names
+                    autoSubmit: true // Flag to indicate auto-submit
+                }
+            });
+            
+            this.dispatchEvent(event);
+        }
+    }
     
     update() {
         if (this.gameActive) {

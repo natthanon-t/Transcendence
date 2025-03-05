@@ -83,13 +83,23 @@ from .models import Tournament, TournamentPlayer, TournamentMatch
 
 class TournamentPlayerSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField()
     
     class Meta:
         model = TournamentPlayer
-        fields = ['id', 'username', 'guest_name', 'eliminated', 'position']
+        fields = ['id', 'username', 'guest_name', 'eliminated', 'position', 'display_name']
     
     def get_username(self, obj):
         return obj.user.username if obj.user else None
+        
+    def get_display_name(self, obj):
+        # Return alias if available, otherwise username or guest_name
+        if obj.user and obj.user.alias:
+            return obj.user.alias
+        elif obj.user:
+            return obj.user.username
+        else:
+            return obj.guest_name
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
     player1 = TournamentPlayerSerializer()
@@ -113,9 +123,9 @@ class TournamentSerializer(serializers.ModelSerializer):
         fields = ['id', 'creator', 'created_at', 'status', 'players', 'matches']
 
 class MatchHistorySerializer(serializers.ModelSerializer):
-    player1_display_name = serializers.ReadOnlyField()
-    player2_display_name = serializers.ReadOnlyField()
-    winner_display_name = serializers.ReadOnlyField()
+    player1_display_name = serializers.SerializerMethodField()
+    player2_display_name = serializers.SerializerMethodField()
+    winner_display_name = serializers.SerializerMethodField()
     is_player1_winner = serializers.ReadOnlyField()
     
     class Meta:
@@ -126,3 +136,24 @@ class MatchHistorySerializer(serializers.ModelSerializer):
                  'player1_score', 'player2_score', 
                  'winner', 'winner_guest_name', 'winner_display_name', 
                  'is_player1_winner', 'tournament', 'tournament_round']
+    
+    def get_player1_display_name(self, obj):
+        # Use alias if available, otherwise follow existing logic
+        if obj.player1 and obj.player1.alias:
+            return obj.player1.alias
+        return obj.player1_guest_name if obj.player1_guest_name else (
+            obj.player1.username if obj.player1 else "Unknown")
+    
+    def get_player2_display_name(self, obj):
+        # Use alias if available, otherwise follow existing logic
+        if obj.player2 and obj.player2.alias:
+            return obj.player2.alias
+        return obj.player2_guest_name if obj.player2_guest_name else (
+            obj.player2.username if obj.player2 else "Unknown")
+    
+    def get_winner_display_name(self, obj):
+        # Use alias if available, otherwise follow existing logic
+        if obj.winner and obj.winner.alias:
+            return obj.winner.alias
+        return obj.winner_guest_name if obj.winner_guest_name else (
+            obj.winner.username if obj.winner else "Unknown")
