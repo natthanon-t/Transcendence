@@ -334,7 +334,8 @@ class UsersList(views.APIView):
                 user_data = {
                     'username': serializer.data['username'],
                     'profile_picture_url': serializer.data['profile_picture_url'],
-                    'online_status': serializer.data['online_status']
+                    'online_status': serializer.data['online_status'],
+                    'alias': serializer.data['alias']
                 }
                 users_data.append(user_data)
             return Response(users_data, status=status.HTTP_200_OK)
@@ -672,34 +673,43 @@ class UpdateTournamentMatch(APIView):
             
             try:
                 match_data = {
-					'match_type': 'TOURNAMENT',
-					'player1_score': match.player1_score,
-					'player2_score': match.player2_score,
-					'tournament': match.tournament,
-					'tournament_round': match.round_number
-				}
-				
-				# Handle player1
+                    'match_type': 'TOURNAMENT',
+                    'player1_score': match.player1_score,
+                    'player2_score': match.player2_score,
+                    'tournament': match.tournament,
+                    'tournament_round': match.round_number
+                }
+                
+                # Handle player1
                 if match.player1:
                     if match.player1.user:
-                        match_data['player1'] = match.player1.user 
+                        match_data['player1'] = match.player1.user
+                        # Store alias separately if needed for reference
+                        if match.player1.user.alias:
+                            match_data['player1_guest_name'] = match.player1.user.alias
                     else:
                         match_data['player1_guest_name'] = match.player1.guest_name
-				
-				# Handle player2
+                
+                # Handle player2
                 if match.player2:
                     if match.player2.user:
                         match_data['player2'] = match.player2.user
+                        # Store alias separately if needed for reference
+                        if match.player2.user.alias:
+                            match_data['player2_guest_name'] = match.player2.user.alias
                     else:
                         match_data['player2_guest_name'] = match.player2.guest_name
-				
-				# Handle winner
+                
+                # Handle winner
                 if match.winner:
                     if match.winner.user:
                         match_data['winner'] = match.winner.user
+                        # Store alias separately if needed for reference
+                        if match.winner.user.alias:
+                            match_data['winner_guest_name'] = match.winner.user.alias
                     else:
                         match_data['winner_guest_name'] = match.winner.guest_name
-				
+                
                 MatchHistory.objects.create(**match_data)
                 print(f"Match history recorded for tournament match {match.id}")
             except Exception as e:
@@ -1082,19 +1092,31 @@ class RecordMatchView(APIView):
         # Set player objects if IDs are provided
         if player1_id:
             try:
-                match_data['player1'] = CustomUser.objects.get(id=player1_id)
+                user1 = CustomUser.objects.get(id=player1_id)
+                match_data['player1'] = user1
+                # If user has an alias and no guest name is provided, use alias as guest name
+                if user1.alias and not player1_guest_name:
+                    match_data['player1_guest_name'] = user1.alias
             except CustomUser.DoesNotExist:
                 return Response({"error": f"User with ID {player1_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
                 
         if player2_id:
             try:
-                match_data['player2'] = CustomUser.objects.get(id=player2_id)
+                user2 = CustomUser.objects.get(id=player2_id)
+                match_data['player2'] = user2
+                # If user has an alias and no guest name is provided, use alias as guest name
+                if user2.alias and not player2_guest_name:
+                    match_data['player2_guest_name'] = user2.alias
             except CustomUser.DoesNotExist:
                 return Response({"error": f"User with ID {player2_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
                 
         if winner_id:
             try:
-                match_data['winner'] = CustomUser.objects.get(id=winner_id)
+                winner = CustomUser.objects.get(id=winner_id)
+                match_data['winner'] = winner
+                # If winner has an alias and no winner guest name is provided, use alias
+                if winner.alias and not winner_guest_name:
+                    match_data['winner_guest_name'] = winner.alias
             except CustomUser.DoesNotExist:
                 return Response({"error": f"User with ID {winner_id} not found"}, status=status.HTTP_400_BAD_REQUEST)
         
