@@ -2,7 +2,7 @@ import { updateTextForElem } from "../utils/languages.js";
 import { navigateTo } from '../index.js';
 import { BASE_URL } from '../index.js';
 import { isUserConnected } from "../utils/utils.js";
-import { validateUsername, validateEmail } from "../utils/validateInput.js";
+import { validateUsername, validateEmail , validateAliasname} from "../utils/validateInput.js";
 
 // Function that will be called when the view is loaded
 export async function editProfile () {
@@ -41,6 +41,7 @@ export async function editProfile () {
 	// Add event listeners for when the user leaves the input fields
 	usernameElem.addEventListener('blur', () => validateUsername(usernameElem, usernameErrorElem));
 	emailElem.addEventListener('blur', () => validateEmail(emailElem, emailErrorElem));
+	aliasElem.addEventListener('blur', () => validateAliasname(aliasElem, aliasErrorElem));
 	//passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
 
 	avatarInputElem.addEventListener('change', () => {
