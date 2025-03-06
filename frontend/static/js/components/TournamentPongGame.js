@@ -43,8 +43,8 @@ class TournamentPongGame extends HTMLElement {
             x: this.canvas.width / 2,
             y: this.canvas.height / 2,
             radius: 10,
-            dx: 2,
-            dy: 2,
+            dx: 2.5,
+            dy: 2.5,
             color: "WHITE",
         };
         
