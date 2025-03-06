@@ -157,7 +157,7 @@ class PongGame extends HTMLElement {
     moveComputerPaddle() {
         const paddleSpeed = randomBetween(0, 5); // ความเร็วในการเคลื่อนไหวของพาย
         const errorFactor = randomBetween(0.01, 0.2); // ความสุ่ม (อ่อนลงเพื่อไม่ให้พลาดมาก)
-        const timeLag = 2; // เวลาล่าช้า (delay) ในมิลลิวินาที
+        const timeLag = 1000; // เวลาล่าช้า (delay) ในมิลลิวินาที
         const movementThreshold = 1; 
 
         const predictedY = this.ball.y + this.ball.dy * (this.canvas.width - this.ball.x) / Math.abs(this.ball.dx);
