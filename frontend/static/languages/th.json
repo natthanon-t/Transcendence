@@ -17,6 +17,8 @@
 	"settings": "ตั้งค่า",
 	"homestart": "update-SETTING",
 	"ready" : "พร้อม!!",
+	"gdpr": "ยอมรับข้อตกลง GDPR",
+	"btgdpr": "ดูข้อมูล GDPR",
 
 	"menu": "menu",
 	"home-page": "home page",
