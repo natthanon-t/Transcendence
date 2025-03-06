@@ -46,7 +46,7 @@
         <div id="two-factor-section" style="display: none;">
             <div class="form-group">
                 <label for="two-factor-code" class="text-white">Enter 2FA Code</label>
-                <input type="text" class="form-control" id="twofactorcode" placeholder="Enter 2FA code" required maxlength="6">
+                <input type="text" class="form-control" id="twofactorcode" oninput="this.value = this.value.replace(/^[0-9]/g, '')" placeholder="Enter 2FA code" required maxlength="6">
                 <small id="two-factor-error" class="text-danger">&nbsp;</small>
 				<button class="btn btn-lg text-light btn-filled" id="verify-2fa-button" data-translate="btn2FA">login</button>
             </div>
