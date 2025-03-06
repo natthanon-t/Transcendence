@@ -33,8 +33,10 @@
 	
 	"username-empty-error": "Username cannot be empty",
 	"username-space-error": "Username cannot be space",
+	"username-invalid-error": "Username allow [a-z][0-9]",
 	"alias-empty-error": "alias cannot be empty",
 	"alias-space-error": "alias cannot be space",
+	"alias-invalid-error": "alias allow [a-z][0-9]",
 	"e-mail-empty-error": "Email cannot be empty",
 	"e-mail-invalid-error": "Invalid email address",
 	"password-empty-error": "Password cannot be empty",

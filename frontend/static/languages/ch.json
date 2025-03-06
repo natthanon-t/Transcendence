@@ -33,8 +33,10 @@
 
 	"username-empty-error": "用户名不能为空",
 	"username-space-error": "用户名不能为空",
+	"username-invalid-error": "用户名不能为空 [a-z][0-9]",
 	"alias-empty-error": "用户名不能为空",
 	"alias-space-error": "用户名不能为空",
+	"alias-invalid-error": "用户名不能为空 [a-z][0-9]",
 	"e-mail-empty-error": "电子邮件不能为空",
 	"e-mail-invalid-error": "电子邮件无效",
 	"password-empty-error": "密码不能为空",
