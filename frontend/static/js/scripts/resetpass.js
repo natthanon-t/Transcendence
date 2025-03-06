@@ -47,7 +47,7 @@ export function showOtpForm(email) {
         <div class="row justify-content-center mb-3">
             <div class="col-12 text-left">
                 <label for="otp" class="text-white" data-translate="otp-label">Enter OTP:</label>
-                <input type="text" oninput="this.value = this.value.replace(/^[0-9]/g, '')" class="form-control text-center text-input" id="otp" maxlength="6">
+                <input type="text" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="form-control text-center text-input" id="otp" maxlength="6">
                 <small class="text-danger" id="otp-error">&nbsp;</small>
             </div>
             <div class="col-12 text-left">
