@@ -22,7 +22,7 @@ else
 fi
 # Import the NDJSON file into Kibana
 echo "Importing saved objects..."
-curl -u "kibana_user:testpass" -X POST "$KIBANA_URL/api/saved_objects/_import" -H "kbn-xsrf: true" -F "file=@$FILE_PATH"
+curl -u "${ELASTICSEARCH_USERNAME}:${ELASTIC_PASSWORD}" -X POST "$KIBANA_URL/api/saved_objects/_import" -H "kbn-xsrf: true" -F "file=@$FILE_PATH"
 
 #curl -X POST "$KIBANA_URL/api/saved_objects/_import" -H "kbn-xsrf: true" -F "file=@$FILE_PATH"
 
