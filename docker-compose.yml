@@ -77,7 +77,6 @@ services:
     ports:
       - "8200:8200"
     volumes:
-      - ./vault/data:/vault/data
       - shared-data:/vault/token/
     networks:
       transcendence:
