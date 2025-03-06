@@ -116,7 +116,7 @@ services:
     container_name: node_exporter
     restart: always
     ports:
-      - "9100:9100"
+      - "9101:9101"
     networks:
       - transcendence
 
