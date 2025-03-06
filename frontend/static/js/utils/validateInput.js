@@ -11,6 +11,11 @@ export const validateUsername = (usernameElem, usernameErrorElem) => {
         updateTextForElem(usernameErrorElem, 'username-space-error'); // Update with your error message
         return false;
     }
+
+	if (!/^[a-z0-9]+$/.test(username)) {
+        updateTextForElem(usernameErrorElem, 'username-invalid-error'); // Update with your error message
+        return false;
+    }
 	
 		usernameErrorElem.textContent = '\u00A0';
 		return true;
@@ -24,8 +29,12 @@ export const validateAliasname = (aliasElem, aliasErrorElem) => {
 		updateTextForElem(aliasErrorElem, 'alias-empty-error');
 		return false;
 	}
-	if (/\s/.test(username)) {
+	if (/\s/.test(alias)) {
         updateTextForElem(aliasErrorElem, 'alias-space-error'); // Update with your error message
+        return false;
+    }
+	if (!/^[a-z0-9]+$/.test(alias)) {
+        updateTextForElem(aliasErrorElem, 'alias-invalid-error'); // Update with your error message
         return false;
     }
 	
