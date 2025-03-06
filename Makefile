@@ -21,15 +21,12 @@ up:
 # Stop the containers and remove them
 down:
 	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} down --remove-orphans
-	@sudo rm -rf ./back/transcendence/transcendence/__pycache__
-	@sudo rm -rf ./back/transcendence/user_management/__pycache__ ./back/transcendence/user_management/migrations
 
 # Clean all Docker resources and the data folder
 clean: down hard_clean
 	docker network prune -f
 	docker system prune -f -a
 	docker volume prune -f
-	sudo rm -rf data
 
 re: clean all
 
