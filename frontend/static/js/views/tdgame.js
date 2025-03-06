@@ -1,5 +1,6 @@
 import AbstractView from "./AbstractView.js";
-// import { home } from "../scripts/home.js";
+import "../scripts/pong-game.js";
+import "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
 
 export default class extends AbstractView {
     constructor() {
