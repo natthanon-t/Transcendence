@@ -13,6 +13,7 @@ migrate:
 
 restart: down up
 # Build the docker images and the containers and start them
+firstup: up run-script
 
 up:
 	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} up -d --build
@@ -54,7 +55,7 @@ pullimages:
 	@docker pull nginx
 	@docker pull postgres
 	@docker pull prom/prometheus
-	@docker pull grafana/grafana
+	@docker pull grafana/grafana:11.4.2-ubuntu
 	@docker pull adminer
 	@docker pull vault
 	@docker pull prom/node-exporter
