@@ -116,22 +116,25 @@ export default class extends AbstractView {
         // Get translation for "You"
         const youText = getText('you') || 'You';
         
-        // Set player 1 name
+        // Set player 1 name - use alias if available
         if (this.gameSetup.player1.type === 'guest') {
             player1NameEl.textContent = this.gameSetup.player1.name;
         } else {
-            player1NameEl.textContent = this.gameSetup.player1.username || youText;
+            // Use alias if available, otherwise use username
+            player1NameEl.textContent = this.gameSetup.player1.alias || this.gameSetup.player1.username || youText;
             this.currentUser = {
                 username: this.gameSetup.player1.username,
-                id: this.gameSetup.player1.id
+                id: this.gameSetup.player1.id,
+                alias: this.gameSetup.player1.alias
             };
         }
         
-        // Set player 2 name
+        // Set player 2 name (use alias if available)
         if (this.gameSetup.player2.type === 'guest') {
             player2NameEl.textContent = this.gameSetup.player2.name;
         } else {
-            player2NameEl.textContent = this.gameSetup.player2.username;
+            // Use alias if available, otherwise fall back to username
+            player2NameEl.textContent = this.gameSetup.player2.alias || this.gameSetup.player2.username;
         }
     }
     
@@ -154,14 +157,14 @@ export default class extends AbstractView {
         // Get translation for "You"
         const youText = getText('you') || 'You';
         
-        // Set player names
+        // Set player names - use alias if available
         const player1Name = this.gameSetup.player1.type === 'guest' ? 
             this.gameSetup.player1.name : 
-            (this.gameSetup.player1.username || youText);
+            (this.gameSetup.player1.alias || this.gameSetup.player1.username || youText);
             
         const player2Name = this.gameSetup.player2.type === 'guest' ? 
             this.gameSetup.player2.name : 
-            this.gameSetup.player2.username;
+            (this.gameSetup.player2.alias || this.gameSetup.player2.username);
         
         gameElement.player1Name = player1Name;
         gameElement.player2Name = player2Name;
