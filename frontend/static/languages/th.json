@@ -17,6 +17,8 @@
 	"settings": "ตั้งค่า",
 	"homestart": "update-SETTING",
 	"ready" : "พร้อม!!",
+	"gdpr": "ยอมรับข้อตกลง GDPR",
+	"btgdpr": "ดูข้อมูล GDPR",
 
 	"menu": "menu",
 	"home-page": "home page",
@@ -32,6 +34,11 @@
 	"have account": "คุณมีบัญชีแล้วใช่หรือไม->",
 
 	"username-empty-error": "username ไม่สามารถใส่ค่าว่างได้",
+	"username-space-error": "Username ไม่สามารถใส่ช่องว่างได้",
+	"username-invalid-error": "username ใช้ได้ [a-z][0-9]",
+	"alias-empty-error": "alias ไม่สามารถใส่ค่าว่างได้",
+	"alias-space-error": "alias ไม่สามารถใส่ช่องว่างได้",
+	"alias-invalid-error": "alias ใช้ได้ [a-z][0-9]",
 	"e-mail-empty-error": "e-mail ไม่สามารถใส่ค่าว่างได้",
 	"e-mail-invalid-error": "e-mail is invalid",
 	"password-empty-error": "password ไม่สามารถใส่ค่าว่างได้",

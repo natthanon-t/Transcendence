@@ -29,7 +29,7 @@
         <div class="row justify-content-center mb-3">
 			<div class="col-12 text-left">
 				<label for="username" class="text-white" data-translate="username">username:</label>
-				<input type="text" class="form-control text-center text-input" id="username" data-translate="username" maxlength="15">
+				<input type="text" oninput="this.value = this.value.replace(/[^a-z0-9]/g, '')" class="form-control text-center text-input" id="username" data-translate="username" maxlength="15">
 				<small class="text-danger" id="username-error">&nbsp;</small>
 			</div>
 		</div>
@@ -40,23 +40,16 @@
 				<small class="text-danger" id="email-error">&nbsp;</small>
 			</div>
 		</div>
-		<!-- <div class="row justify-content-center mb-3">
-			<div class="col-12 text-left">
-				<label for="password" class="text-white" data-translate="password">password:</label>
-				<input type="password" class="form-control text-center text-input" id="password" maxlength="64">
-				<small class="text-danger" id="password-error">&nbsp;</small>
-			</div>
-		</div> -->
 		<div class="row justify-content-center mb-3">
 			<div class="col-12 text-left">
 				<label for="alias" class="text-white" data-translate="alias">alias:</label>
-				<input type="text" class="form-control text-center text-input" id="alias" maxlength="12">
+				<input type="text" oninput="this.value = this.value.replace(/[^a-z0-9]/g, '')" class="form-control text-center text-input" id="alias" maxlength="12">
 				<small class="text-danger" id="alias-error">&nbsp;</small>
 			</div>
 		</div>
 		<label>
             <input type="checkbox" id="gdpr">
-            I agree to the GDPR policy
+            <label for="gdpr" class="text-white" data-translate="gdpr">I agree to the GDPR policy</label>
 			<small class="text-danger" id="gdprConsent-error">&nbsp;</small>
         </label>
 		<div class="row justify-content-center mt-3">

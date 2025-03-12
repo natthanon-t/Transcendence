@@ -14,14 +14,14 @@
 		<div class="row justify-content-center mb-3">
 			<div class="col-12 text-left">
 				<label for="username" class="text-white" data-translate="username">username:</label>
-				<input type="text" class="form-control text-center text-input" id="username" maxlength="15">
+				<input type="text" oninput="this.value = this.value.replace(/[^a-z0-9]/g, '')" class="form-control text-center text-input" id="username" maxlength="15">
 				<small class="text-danger" id="username-error">&nbsp;</small>
 			</div>
 		</div>
 		<div class="row justify-content-center mb-3">
 			<div class="col-12 text-left">
 				<label for="password" class="text-white" data-translate="password">password:</label>
-				<input type="password" class="form-control text-center text-input" id="password" maxlength="64">
+				<input type="password" oninput="this.value = this.value.replace(/[^a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\-=/]/g, '')" class="form-control text-center text-input" id="password" maxlength="20">
 				<small class="text-danger" id="password-error">&nbsp;</small>
 			</div>
 		</div>
@@ -46,7 +46,7 @@
         <div id="two-factor-section" style="display: none;">
             <div class="form-group">
                 <label for="two-factor-code" class="text-white">Enter 2FA Code</label>
-                <input type="text" class="form-control" id="twofactorcode" placeholder="Enter 2FA code" required maxlength="6">
+                <input type="text" class="form-control" id="twofactorcode" oninput="this.value = this.value.replace(/[^0-9]/g, '')"placeholder="Enter 2FA code" required maxlength="6">
                 <small id="two-factor-error" class="text-danger">&nbsp;</small>
 				<button class="btn btn-lg text-light btn-filled" id="verify-2fa-button" data-translate="btn2FA">login</button>
             </div>

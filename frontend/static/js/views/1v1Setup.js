@@ -6,6 +6,7 @@ export default class extends AbstractView {
     constructor() {
         super();
         this.setTitle("42_group - 1 vs 1 Setup");
+        this.currentUser = null; // Will store current user data
     }
     
     async getHtml() {
@@ -19,6 +20,10 @@ export default class extends AbstractView {
         const pointsToWinText = getText('points-to-win') || 'Points to Win (1-10)';
         const startGameText = getText('start-game') || 'Start Game';
         const selectFriendOptionText = getText('select-a-friend') || 'Select a friend';
+        const editAliasText = getText('edit-alias') || 'Edit Alias';
+        const cancelText = getText('cancel') || 'Cancel';
+        const saveText = getText('save') || 'Save';
+        const enterPlayerNameText = getText('enter-player-name') || 'Enter player name';
         
         return `
 		<div class="full-height d-flex flex-column align-items-center justify-content-center">
@@ -42,8 +47,9 @@ export default class extends AbstractView {
                             <div id="player1Avatar" class="me-3" style="width: 40px; height: 40px; border-radius: 50%; background-color: #444; overflow: hidden;">
                                 <!-- User avatar will be loaded here -->
                             </div>
-                            <div>
+                            <div class="d-flex align-items-center">
                                 <div id="player1Username" class="fw-bold" style="color: #000; font-size: 16px;">Loading...</div>
+                                <button id="editAliasButton" class="btn btn-sm btn-outline-light ms-2" style="font-size: 0.75rem; padding: 2px 8px; display: none;" data-translate="edit-alias">${editAliasText}</button>
                             </div>
                         </div>
                     </div>
@@ -95,6 +101,28 @@ export default class extends AbstractView {
                 <img src="static/assets/UI/icons/game.svg" alt="menugmae Button" id="gamememnu">
             </a>
         </div>
+        
+        <!-- Edit Alias Modal -->
+        <div class="modal fade" id="editAliasModal" tabindex="-1" aria-labelledby="editAliasModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content glass-modal-bg text-white">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="editAliasModalLabel" data-translate="edit-alias">${editAliasText}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="player-alias" maxlength="12" placeholder="${enterPlayerNameText}" data-translate-placeholder="enter-alias">
+                            <div id="player-alias-error" class="text-danger mt-1"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-translate="cancel">${cancelText}</button>
+                        <button type="button" class="btn btn-filled" id="save-alias-btn" data-translate="save">${saveText}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         `;
     }
     
@@ -117,6 +145,22 @@ export default class extends AbstractView {
         document.getElementById('startGameBtn').addEventListener('click', () => {
             this.startGame();
         });
+        
+        // Set up alias editing button
+        const editAliasButton = document.getElementById('editAliasButton');
+        if (editAliasButton) {
+            editAliasButton.addEventListener('click', () => {
+                this.openAliasEditModal();
+            });
+        }
+        
+        // Set up save alias button
+        const saveAliasButton = document.getElementById('save-alias-btn');
+        if (saveAliasButton) {
+            saveAliasButton.addEventListener('click', () => {
+                this.saveAlias();
+            });
+        }
     }
     
     async loadCurrentUser() {
@@ -133,7 +177,10 @@ export default class extends AbstractView {
                 const usernameElement = document.getElementById('player1Username');
                 if (usernameElement) {
                     const youText = getText('you') || 'You';
-                    usernameElement.textContent = this.currentUser.username || youText;
+                    
+                    // Use alias if available, otherwise use username
+                    const displayName = this.currentUser.alias || this.currentUser.username;
+                    usernameElement.textContent = displayName;
                     
                     // Force styling to ensure visibility
                     usernameElement.style.color = "#000"; // Black text
@@ -142,6 +189,12 @@ export default class extends AbstractView {
                     usernameElement.style.fontSize = "16px";
                     usernameElement.style.fontWeight = "bold";
                     usernameElement.style.display = "block";
+                    
+                    // Show edit alias button
+                    const editAliasButton = document.getElementById('editAliasButton');
+                    if (editAliasButton) {
+                        editAliasButton.style.display = 'inline-block';
+                    }
                 }
                 
                 // Load avatar (same as before)
@@ -183,12 +236,49 @@ export default class extends AbstractView {
                 
                 // Add friends as options
                 if (friends && friends.length > 0) {
-                    friends.forEach(friend => {
-                        const option = document.createElement('option');
-                        option.value = friend.username;
-                        option.text = friend.username;
-                        selectElement.appendChild(option);
-                    });
+                    // Attempt to fetch full user details to get aliases
+                    try {
+                        const usersResponse = await fetch(`${BASE_URL}/api/users_list`);
+                        if (usersResponse.status === 200) {
+                            const users = await usersResponse.json();
+                            
+                            // Create a map of username to alias for quick lookup
+                            const userAliasMap = {};
+                            users.forEach(user => {
+                                if (user.username) {
+                                    userAliasMap[user.username.toLowerCase()] = user.alias || null;
+                                }
+                            });
+                            
+                            // Add friends with aliases when available
+                            friends.forEach(friend => {
+                                const option = document.createElement('option');
+                                option.value = friend.username;
+                                
+                                // Check if friend has an alias
+                                const alias = userAliasMap[friend.username.toLowerCase()];
+                                if (alias) {
+                                    // Show "alias (username)" format
+                                    option.text = `${alias} (${friend.username})`;
+                                    // Store username and alias separately for later use
+                                    option.dataset.username = friend.username;
+                                    option.dataset.alias = alias;
+                                } else {
+                                    option.text = friend.username;
+                                }
+                                
+                                selectElement.appendChild(option);
+                            });
+                            
+                        } else {
+                            // Fall back to showing just usernames
+                            this.addFriendsWithoutAliases(friends, selectElement);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching user details:', error);
+                        // Fall back to showing just usernames
+                        this.addFriendsWithoutAliases(friends, selectElement);
+                    }
                 } else {
                     // If no friends, add a placeholder option
                     const noFriendsText = getText('no-friends-available') || 'No friends available';
@@ -204,6 +294,16 @@ export default class extends AbstractView {
         } catch (error) {
             console.error('Error loading friends list:', error);
         }
+    }
+    
+    // Helper method to add friends without aliases
+    addFriendsWithoutAliases(friends, selectElement) {
+        friends.forEach(friend => {
+            const option = document.createElement('option');
+            option.value = friend.username;
+            option.text = friend.username;
+            selectElement.appendChild(option);
+        });
     }
     
     startGame() {
@@ -224,19 +324,30 @@ export default class extends AbstractView {
         player1 = { 
             type: 'user',
             username: this.currentUser.username,
-            id: this.currentUser.id
+            id: this.currentUser.id,
+            alias: this.currentUser.alias // Include alias for Player 1
         };
         
         // Validate player 2
         if (player2Type === 'user') {
-            const username = document.getElementById('player2Username').value;
+            const select = document.getElementById('player2Username');
+            const username = select.value;
             if (!username) {
                 const selectFriendValidationText = getText('select-friend-validation') || 'Please select a friend for Player 2';
                 alert(selectFriendValidationText);
                 isValid = false;
                 return;
             }
-            player2 = { type: 'user', username: username };
+            
+            // Check if the selected option has an alias stored in dataset
+            const selectedOption = select.options[select.selectedIndex];
+            const alias = selectedOption ? selectedOption.dataset.alias : null;
+            
+            player2 = { 
+                type: 'user', 
+                username: username,
+                alias: alias // Include alias if available
+            };
         } else {
             const guestName = document.getElementById('player2GuestName').value.trim();
             if (!guestName) {
@@ -269,6 +380,75 @@ export default class extends AbstractView {
             
             // Navigate to game page
             window.location.href = '/1v1game';
+        }
+    }
+    
+    openAliasEditModal() {
+        const aliasInput = document.getElementById('player-alias');
+        const errorElement = document.getElementById('player-alias-error');
+        
+        // Clear any previous errors
+        errorElement.textContent = '';
+        
+        // Set the current value in the input
+        aliasInput.value = this.currentUser.alias || '';
+        
+        // Show the modal using Bootstrap's API
+        const modal = new bootstrap.Modal(document.getElementById('editAliasModal'));
+        modal.show();
+    }
+    
+    async saveAlias() {
+        const aliasInput = document.getElementById('player-alias');
+        const errorElement = document.getElementById('player-alias-error');
+        const newAlias = aliasInput.value.trim();
+        
+        // Simple validation
+        if (newAlias.length > 12) {
+            const tooLongText = getText('alias-too-long') || 'Alias must be 12 characters or less';
+            errorElement.textContent = tooLongText;
+            return;
+        }
+        
+        // Update alias via API
+        const formData = new FormData();
+        formData.append('alias', newAlias);
+        
+        try {
+            const response = await fetch(`${BASE_URL}/api/update_user`, {
+                method: 'PUT',
+                body: formData,
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                const data = await response.json();
+                errorElement.textContent = data.alias 
+                    ? data.alias[0] 
+                    : (getText('error-updating-alias') || 'Error updating alias');
+                return;
+            }
+            
+            // Success - update local data
+            this.currentUser.alias = newAlias;
+            
+            // Update the UI
+            const usernameElement = document.getElementById('player1Username');
+            if (usernameElement) {
+                // Use the new alias or fall back to username
+                usernameElement.textContent = this.currentUser.alias || this.currentUser.username;
+            }
+            
+            // Hide the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editAliasModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+        } catch (error) {
+            console.error('Error updating alias:', error);
+            const errorText = getText('error-updating-alias') || 'Error updating alias';
+            errorElement.textContent = errorText;
         }
     }
     

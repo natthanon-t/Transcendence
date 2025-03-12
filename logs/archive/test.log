@@ -1,0 +1,171 @@
+INFO 2025-03-05 08:31:04,570 autoreload Watching for file changes with StatReloader
+WARNING 2025-03-05 08:31:11,080 basehttp "GET /api/profile HTTP/1.0" 401 32
+INFO 2025-03-05 08:31:52,214 basehttp "POST /api/signup HTTP/1.0" 200 0
+INFO 2025-03-05 08:43:06,825 basehttp "POST /api/signup HTTP/1.0" 200 0
+INFO 2025-03-05 08:43:38,064 basehttp "POST /api/login HTTP/1.0" 200 0
+INFO 2025-03-05 08:43:50,756 basehttp "POST /api/verify-2fa HTTP/1.0" 200 0
+INFO 2025-03-05 08:43:51,215 basehttp "GET /api/profile HTTP/1.0" 200 279
+INFO 2025-03-05 08:43:51,351 basehttp "GET /api/user_avatar HTTP/1.0" 200 7402
+INFO 2025-03-05 08:43:54,434 basehttp "GET /api/profile HTTP/1.0" 200 279
+INFO 2025-03-05 08:43:54,738 basehttp "GET /api/user_avatar HTTP/1.0" 200 7402
+INFO 2025-03-05 08:43:54,985 basehttp "GET /api/profile HTTP/1.0" 200 279
+INFO 2025-03-05 08:44:24,479 basehttp "PUT /api/update_user HTTP/1.0" 200 300
+INFO 2025-03-05 08:44:26,160 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 08:44:26,627 basehttp "GET /api/user_avatar HTTP/1.0" 200 86280
+INFO 2025-03-05 08:44:31,928 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 08:44:32,275 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 08:44:32,631 basehttp "GET /api/users_list HTTP/1.0" 200 251
+INFO 2025-03-05 08:44:32,835 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 08:44:33,035 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 08:44:53,665 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 08:44:53,828 basehttp "GET /api/user_avatar HTTP/1.0" 200 86280
+INFO 2025-03-05 08:44:55,975 basehttp "POST /api/logout HTTP/1.0" 200 0
+INFO 2025-03-05 08:45:08,044 basehttp "POST /api/login HTTP/1.0" 200 0
+WARNING 2025-03-05 08:45:20,049 basehttp "POST /api/verify-2fa HTTP/1.0" 400 28
+WARNING 2025-03-05 08:45:23,574 basehttp "POST /api/verify-2fa HTTP/1.0" 400 28
+WARNING 2025-03-05 08:45:35,308 basehttp "POST /api/verify-2fa HTTP/1.0" 400 28
+INFO 2025-03-05 08:46:01,709 basehttp "POST /api/login HTTP/1.0" 200 0
+INFO 2025-03-05 08:46:25,270 basehttp "POST /api/verify-2fa HTTP/1.0" 200 0
+INFO 2025-03-05 08:46:25,453 basehttp "GET /api/profile HTTP/1.0" 200 281
+INFO 2025-03-05 08:46:25,538 basehttp "GET /api/user_avatar HTTP/1.0" 200 7402
+INFO 2025-03-05 08:46:28,103 basehttp "GET /api/profile HTTP/1.0" 200 281
+INFO 2025-03-05 08:46:28,539 basehttp "GET /api/user_avatar HTTP/1.0" 200 7402
+INFO 2025-03-05 08:46:28,707 basehttp "GET /api/profile HTTP/1.0" 200 281
+INFO 2025-03-05 08:46:42,042 basehttp "PUT /api/update_user HTTP/1.0" 200 354
+INFO 2025-03-05 08:46:43,293 basehttp "GET /api/profile HTTP/1.0" 200 363
+INFO 2025-03-05 08:46:43,434 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:46:45,913 basehttp "GET /api/profile HTTP/1.0" 200 363
+INFO 2025-03-05 08:46:46,072 basehttp "GET /api/profile HTTP/1.0" 200 363
+INFO 2025-03-05 08:46:46,337 basehttp "GET /api/users_list HTTP/1.0" 200 291
+INFO 2025-03-05 08:46:46,492 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 08:46:46,820 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 08:47:44,996 basehttp "GET /api/profile HTTP/1.0" 200 363
+INFO 2025-03-05 08:47:45,265 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:50:54,367 basehttp "GET /api/profile HTTP/1.0" 200 363
+INFO 2025-03-05 08:50:54,719 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:50:54,857 basehttp "GET /api/profile HTTP/1.0" 200 363
+INFO 2025-03-05 08:51:05,440 basehttp "PUT /api/update_user HTTP/1.0" 200 262
+INFO 2025-03-05 08:51:06,670 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:51:06,825 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:55:29,427 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:55:29,779 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:55:31,855 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:55:32,318 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:55:32,465 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:55:37,786 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:55:37,873 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:55:40,175 basehttp "POST /api/logout HTTP/1.0" 200 0
+INFO 2025-03-05 08:55:53,386 basehttp "POST /api/login HTTP/1.0" 200 0
+INFO 2025-03-05 08:56:06,228 basehttp "POST /api/verify-2fa HTTP/1.0" 200 0
+INFO 2025-03-05 08:56:06,466 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:56:06,618 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:57:16,429 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:57:16,709 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 08:57:19,990 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:57:20,102 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 08:57:20,420 basehttp "GET /api/users_list HTTP/1.0" 200 245
+INFO 2025-03-05 08:57:20,547 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 08:57:20,851 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 11:46:42,009 autoreload /back/transcendence/user_management/views.py changed, reloading.
+INFO 2025-03-05 11:46:49,726 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 11:46:56,482 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 11:46:56,677 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 11:46:56,861 basehttp "GET /api/users_list HTTP/1.0" 200 245
+INFO 2025-03-05 11:46:57,176 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 11:46:57,453 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 11:47:00,087 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 11:47:00,315 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 11:47:02,497 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 11:47:02,634 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 11:47:03,008 basehttp "GET /api/profile HTTP/1.0" 200 271
+INFO 2025-03-05 11:47:22,424 basehttp "PUT /api/update_user HTTP/1.0" 200 302
+INFO 2025-03-05 11:47:23,895 basehttp "GET /api/profile HTTP/1.0" 200 311
+INFO 2025-03-05 11:47:24,238 basehttp "GET /api/user_avatar HTTP/1.0" 200 362215
+INFO 2025-03-05 11:53:51,081 basehttp "GET /api/profile HTTP/1.0" 200 311
+INFO 2025-03-05 11:53:51,209 basehttp "GET /api/user_avatar HTTP/1.0" 200 362215
+INFO 2025-03-05 11:53:54,478 basehttp "GET /api/profile HTTP/1.0" 200 311
+INFO 2025-03-05 11:53:54,800 basehttp "GET /api/user_avatar HTTP/1.0" 200 362215
+INFO 2025-03-05 11:53:54,964 basehttp "GET /api/profile HTTP/1.0" 200 311
+INFO 2025-03-05 11:54:04,313 basehttp "GET /api/profile HTTP/1.0" 200 311
+INFO 2025-03-05 11:54:04,434 basehttp "GET /api/user_avatar HTTP/1.0" 200 362215
+INFO 2025-03-05 11:54:07,178 basehttp "GET /api/profile HTTP/1.0" 200 311
+INFO 2025-03-05 11:54:07,329 basehttp "GET /api/user_avatar HTTP/1.0" 200 362215
+INFO 2025-03-05 11:54:07,604 basehttp "GET /api/profile HTTP/1.0" 200 311
+INFO 2025-03-05 11:54:16,399 basehttp "PUT /api/update_user HTTP/1.0" 200 278
+INFO 2025-03-05 11:54:17,571 basehttp "GET /api/profile HTTP/1.0" 200 287
+INFO 2025-03-05 11:54:17,639 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 11:54:20,610 basehttp "GET /api/profile HTTP/1.0" 200 287
+INFO 2025-03-05 11:54:20,770 basehttp "GET /api/user_avatar HTTP/1.0" 200 92767
+INFO 2025-03-05 11:54:21,018 basehttp "GET /api/profile HTTP/1.0" 200 287
+INFO 2025-03-05 11:57:54,859 basehttp "PUT /api/update_user HTTP/1.0" 200 318
+INFO 2025-03-05 11:57:55,998 basehttp "GET /api/profile HTTP/1.0" 200 327
+INFO 2025-03-05 11:57:56,276 basehttp "GET /api/user_avatar HTTP/1.0" 200 362215
+INFO 2025-03-05 11:58:28,402 basehttp "GET /api/user_avatar HTTP/1.0" 200 362215
+WARNING 2025-03-05 11:59:16,816 basehttp "GET /api/profile HTTP/1.0" 401 32
+INFO 2025-03-05 11:59:30,777 basehttp "POST /api/login HTTP/1.0" 200 0
+INFO 2025-03-05 11:59:48,918 basehttp "POST /api/verify-2fa HTTP/1.0" 200 0
+INFO 2025-03-05 11:59:49,036 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 11:59:49,116 basehttp "GET /api/user_avatar HTTP/1.0" 200 86280
+INFO 2025-03-05 11:59:59,895 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 11:59:59,979 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 12:00:00,054 basehttp "GET /api/users_list HTTP/1.0" 200 272
+INFO 2025-03-05 12:00:00,120 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:00:00,250 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:00:14,094 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 12:00:14,606 basehttp "GET /api/user_avatar HTTP/1.0" 200 86280
+INFO 2025-03-05 12:00:14,724 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 12:00:16,725 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 12:00:16,813 basehttp "GET /api/user_avatar HTTP/1.0" 200 86280
+INFO 2025-03-05 12:00:19,878 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 12:00:20,027 basehttp "GET /api/profile HTTP/1.0" 200 309
+INFO 2025-03-05 12:00:20,097 basehttp "GET /api/users_list HTTP/1.0" 200 272
+INFO 2025-03-05 12:00:20,171 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:00:20,271 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:02:58,507 basehttp "GET /api/profile HTTP/1.0" 200 327
+INFO 2025-03-05 12:02:58,796 basehttp "GET /api/profile HTTP/1.0" 200 327
+INFO 2025-03-05 12:02:58,943 basehttp "GET /api/users_list HTTP/1.0" 200 272
+INFO 2025-03-05 12:02:59,105 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:02:59,406 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:03:29,261 basehttp "POST /api/add_friend HTTP/1.0" 200 0
+INFO 2025-03-05 12:03:29,353 basehttp "GET /api/profile HTTP/1.0" 200 327
+INFO 2025-03-05 12:03:29,441 basehttp "GET /api/users_list HTTP/1.0" 200 272
+INFO 2025-03-05 12:03:29,565 basehttp "GET /api/friends_list HTTP/1.0" 200 132
+INFO 2025-03-05 12:03:29,675 basehttp "GET /api/friends_list HTTP/1.0" 200 132
+INFO 2025-03-05 12:16:55,313 autoreload /back/transcendence/transcendence/settings.py changed, reloading.
+INFO 2025-03-05 12:17:00,070 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 12:17:05,693 basehttp "GET /api/profile HTTP/1.0" 200 332
+INFO 2025-03-05 12:17:05,837 basehttp "GET /api/profile HTTP/1.0" 200 332
+INFO 2025-03-05 12:17:06,242 basehttp "GET /api/users_list HTTP/1.0" 200 282
+INFO 2025-03-05 12:17:06,397 basehttp "GET /api/friends_list HTTP/1.0" 200 137
+INFO 2025-03-05 12:17:06,538 basehttp "GET /api/friends_list HTTP/1.0" 200 137
+INFO 2025-03-05 12:35:56,102 basehttp "GET /api/profile HTTP/1.0" 200 314
+INFO 2025-03-05 12:35:56,197 basehttp "GET /api/profile HTTP/1.0" 200 314
+INFO 2025-03-05 12:35:56,277 basehttp "GET /api/users_list HTTP/1.0" 200 282
+INFO 2025-03-05 12:35:56,375 basehttp "GET /api/friends_list HTTP/1.0" 200 146
+INFO 2025-03-05 12:35:56,501 basehttp "GET /api/friends_list HTTP/1.0" 200 146
+INFO 2025-03-05 12:36:04,708 basehttp "POST /api/remove_friend HTTP/1.0" 200 0
+INFO 2025-03-05 12:36:04,760 basehttp "GET /api/profile HTTP/1.0" 200 314
+INFO 2025-03-05 12:36:04,819 basehttp "GET /api/users_list HTTP/1.0" 200 282
+INFO 2025-03-05 12:36:04,885 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:36:04,967 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:44:33,189 basehttp "GET /api/profile HTTP/1.0" 200 332
+INFO 2025-03-05 12:44:33,482 basehttp "GET /api/profile HTTP/1.0" 200 332
+INFO 2025-03-05 12:44:34,018 basehttp "GET /api/users_list HTTP/1.0" 200 282
+INFO 2025-03-05 12:44:34,162 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 12:44:35,417 basehttp "GET /api/friends_list HTTP/1.0" 200 2
+INFO 2025-03-05 13:21:18,918 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 13:26:10,057 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 13:41:20,374 autoreload Watching for file changes with StatReloader
+WARNING 2025-03-05 14:38:48,857 basehttp "GET /api/profile HTTP/1.0" 401 49
+WARNING 2025-03-05 15:22:36,880 basehttp "GET /api/profile HTTP/1.0" 401 49
+INFO 2025-03-05 16:20:44,963 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 18:18:53,691 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 18:38:28,281 autoreload Watching for file changes with StatReloader
+WARNING 2025-03-05 18:47:53,115 basehttp "GET /api/profile HTTP/1.0" 401 49
+WARNING 2025-03-05 18:48:03,906 basehttp "GET /api/profile HTTP/1.0" 401 49
+INFO 2025-03-05 19:02:55,268 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 19:19:11,198 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 19:28:00,965 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 19:57:29,313 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 20:56:42,835 autoreload Watching for file changes with StatReloader
+INFO 2025-03-05 22:20:01,149 autoreload Watching for file changes with StatReloader

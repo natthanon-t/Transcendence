@@ -31,8 +31,8 @@ class PongGame extends HTMLElement {
             x: this.canvas.width / 2,
             y: this.canvas.height / 2,
             radius: 10,
-            dx: 2,
-            dy: 2,
+            dx: 2.5, // Initial horizontal speed
+            dy: 2.5, // Initial vertical speed
             color: "WHITE",
         };
 
@@ -55,6 +55,11 @@ class PongGame extends HTMLElement {
         this.keys = {}; // To handle key input
         this.userScore = 0;
         this.comScore = 0;
+
+        // Speed multiplier
+        this.speedMultiplier = 1; // Initial speed multiplier
+        this.speedIncreaseInterval = 1000; // Increase speed every 1 second
+        this.lastSpeedIncreaseTime = Date.now(); // Track the last time speed was increased
     }
 
     connectedCallback() {
@@ -94,8 +99,9 @@ class PongGame extends HTMLElement {
     }
 
     moveBall() {
-        this.ball.x += this.ball.dx;
-        this.ball.y += this.ball.dy;
+        // Apply speed multiplier
+        this.ball.x += this.ball.dx * this.speedMultiplier;
+        this.ball.y += this.ball.dy * this.speedMultiplier;
 
         // Bounce off top and bottom
         if (this.ball.y + this.ball.radius > this.canvas.height || this.ball.y - this.ball.radius < 0) {
@@ -134,10 +140,12 @@ class PongGame extends HTMLElement {
     }
 
     resetBall() {
+        // Reset ball position and speed
         this.ball.x = this.canvas.width / 2;
         this.ball.y = this.canvas.height / 2;
-        this.ball.dx = 2;
-        this.ball.dy = 2;
+        this.ball.dx = 3;
+        this.ball.dy = 3;
+        this.speedMultiplier = 1; // Reset speed multiplier
     }
 
     moveUserPaddle() {
@@ -146,90 +154,83 @@ class PongGame extends HTMLElement {
         if (this.keys["ArrowDown"]) this.userPaddle.y = Math.min(this.userPaddle.y + step, this.canvas.height - this.userPaddle.height);
     }
 
-	moveComputerPaddle() {
-		const paddleSpeed = randomBetween(0, 2.5); // ความเร็วในการเคลื่อนไหวของพาย
-		const errorFactor = randomBetween(0.01, 0.2); // ความสุ่ม (อ่อนลงเพื่อไม่ให้พลาดมาก)
-		const timeLag = 2; // เวลาล่าช้า (delay) ในมิลลิวินาที
-		const movementThreshold = 1; // ค่าความแตกต่างที่น้อยกว่าค่านี้จะไม่ให้พายคอมพิวเตอร์เคลื่อนที่
+    moveComputerPaddle() {
+        const paddleSpeed = randomBetween(0, 5); // ความเร็วในการเคลื่อนไหวของพาย
+        const errorFactor = randomBetween(0.01, 0.2); // ความสุ่ม (อ่อนลงเพื่อไม่ให้พลาดมาก)
+        const timeLag = 1000; // เวลาล่าช้า (delay) ในมิลลิวินาที
+        const movementThreshold = 1; 
 
-		// คำนวณตำแหน่ง Y ของบอลในเวลาที่จะถึงขอบขวาของ canvas
-		const predictedY = this.ball.y + this.ball.dy * (this.canvas.width - this.ball.x) / Math.abs(this.ball.dx);
+        const predictedY = this.ball.y + this.ball.dy * (this.canvas.width - this.ball.x) / Math.abs(this.ball.dx);
 
-		// ตรวจสอบว่าบอลอยู่ที่กลางจอหรือไปด้านขวานับจากกลาง
-		if (this.ball.x >= this.canvas.width / randomBetween(1.2, 3)) {
-			// ตรวจสอบการชนขอบบน/ล่างและให้มันเด้งหากออกนอกขอบ
-			let targetY = predictedY;
-			if (targetY < 0) {
-				targetY = -targetY; // เด้งขอบบน
-			} else if (targetY > this.canvas.height) {
-				targetY = 2 * this.canvas.height - targetY; // เด้งขอบล่าง
-			}
+        if (this.ball.x >= this.canvas.width / randomBetween(1.2, 3)) {
+            let targetY = predictedY;
+            if (targetY < 0) {
+                targetY = -targetY;
+            } else if (targetY > this.canvas.height) {
+                targetY = 2 * this.canvas.height - targetY;
+            }
 
-			// เพิ่มความสุ่มในตำแหน่งเป้าหมาย
-			const randomness = randomBetween(1 - errorFactor, 1 + errorFactor); // สุ่มค่าให้แตกต่างจากตำแหน่งเป้าหมาย
-			targetY *= randomness;
+            const randomness = randomBetween(1 - errorFactor, 1 + errorFactor);
+            targetY *= randomness;
 
-			// เก็บเวลาในการล่าช้า
-			if (!this.lastMoveTime) {
-				this.lastMoveTime = Date.now();
-			}
+            if (!this.lastMoveTime) {
+                this.lastMoveTime = Date.now();
+            }
 
-			const currentTime = Date.now();
-			const elapsedTime = currentTime - this.lastMoveTime;
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - this.lastMoveTime;
 
-			// ถ้าเวลาผ่านไปตามที่กำหนดแล้วให้ตอบสนอง
-			if (elapsedTime >= timeLag) {
-				// คำนวณความแตกต่างระหว่างตำแหน่งของพายคอมพิวเตอร์กับตำแหน่งที่คำนวณได้
-				const difference = targetY - (this.compPaddle.y + this.compPaddle.height / 2);
+            if (elapsedTime >= timeLag) {
+                const difference = targetY - (this.compPaddle.y + this.compPaddle.height / 2);
 
-				// ถ้าความแตกต่างน้อยกว่าค่าที่กำหนด จะไม่ให้พายคอมพิวเตอร์เคลื่อนที่
-				if (Math.abs(difference) > movementThreshold) {
-					// การเคลื่อนไหวพายคอมพิวเตอร์ให้เข้าหาตำแหน่งที่คำนวณได้ โดยไม่ให้มันแม่นยำเกินไป
-					if (Math.abs(difference) > paddleSpeed) {
-						this.compPaddle.y += Math.sign(difference) * paddleSpeed;
-					}
-				}
+                if (Math.abs(difference) > movementThreshold) {
+                    if (Math.abs(difference) > paddleSpeed) {
+                        this.compPaddle.y += Math.sign(difference) * paddleSpeed;
+                    }
+                }
 
-				// ป้องกันพายคอมพิวเตอร์ไม่ให้เคลื่อนที่ออกนอกขอบ
-				this.compPaddle.y = Math.max(0, Math.min(this.canvas.height - this.compPaddle.height, this.compPaddle.y));
+                this.compPaddle.y = Math.max(0, Math.min(this.canvas.height - this.compPaddle.height, this.compPaddle.y));
 
-				// รีเซ็ตเวลา
-				this.lastMoveTime = currentTime;
-			}
-		}
-	}
+                this.lastMoveTime = currentTime;
+            }
+        }
+    }
 
-
-	checkForWinner() {
+    checkForWinner() {
         if (this.userScore >= 3) {
             alert("You Win!");
-            // window.location.href = "profile.html";  // Go to a new page when the player wins
+            // window.location.href = "profile.html";
         }
         if (this.comScore >= 3) {
             alert("Computer Wins!");
-            // window.location.href = "profile.html";  // Go to a different page when the computer wins
+            // window.location.href = "profile.html";
+        }
+    }
+
+    increaseSpeed() {
+        const currentTime = Date.now();
+        if (currentTime - this.lastSpeedIncreaseTime >= this.speedIncreaseInterval) {
+            this.speedMultiplier += 0.1; // Increase speed by 10% every second
+            this.lastSpeedIncreaseTime = currentTime;
         }
     }
 
     update() {
-		if (this.userScore < 5 && this.comScore < 5)
-		{
-			this.moveBall();
-			this.moveUserPaddle();
-			this.moveComputerPaddle();
-			// this.checkForWinner();
-			this.draw();
-			requestAnimationFrame(() => this.update());
-		}
-		else if (this.userScore == 3 || this.comScore == 3)
-		{
-			this.checkForWinner();
-		}
+        if (this.userScore < 5 && this.comScore < 5) {
+            this.moveBall();
+            this.moveUserPaddle();
+            this.moveComputerPaddle();
+            this.increaseSpeed(); // Increase ball speed over time
+            this.draw();
+            requestAnimationFrame(() => this.update());
+        } else if (this.userScore == 3 || this.comScore == 3) {
+            this.checkForWinner();
+        }
     }
 }
 
 function randomBetween(min, max) {
-	return Math.random() * (max - min) + min;
+    return Math.random() * (max - min) + min;
 }
 
 // Define the custom element

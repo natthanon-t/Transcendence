@@ -6,10 +6,41 @@ export const validateUsername = (usernameElem, usernameErrorElem) => {
 	if (username === '') {
 		updateTextForElem(usernameErrorElem, 'username-empty-error');
 		return false;
-	} else {
+	}
+	if (/\s/.test(username)) {
+        updateTextForElem(usernameErrorElem, 'username-space-error'); // Update with your error message
+        return false;
+    }
+
+	if (!/^[a-z0-9]+$/.test(username)) {
+        updateTextForElem(usernameErrorElem, 'username-invalid-error'); // Update with your error message
+        return false;
+    }
+	
 		usernameErrorElem.textContent = '\u00A0';
 		return true;
+
+}
+
+// Validates the username, returns true if it is valid
+export const validateAliasname = (aliasElem, aliasErrorElem) => {
+	const alias = aliasElem.value;
+	if (alias === '') {
+		updateTextForElem(aliasErrorElem, 'alias-empty-error');
+		return false;
 	}
+	if (/\s/.test(alias)) {
+        updateTextForElem(aliasErrorElem, 'alias-space-error'); // Update with your error message
+        return false;
+    }
+	if (!/^[a-z0-9]+$/.test(alias)) {
+        updateTextForElem(aliasErrorElem, 'alias-invalid-error'); // Update with your error message
+        return false;
+    }
+	
+	aliasErrorElem.textContent = '\u00A0';
+		return true;
+
 }
 
 export const validateEmail = (emailElem, emailErrorElem) => {
