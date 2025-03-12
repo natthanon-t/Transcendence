@@ -37,6 +37,9 @@ sleep 10
 
 python transcendence/manage.py makemigrations user_management
 python transcendence/manage.py migrate
+chmod 777 -R transcendence/transcendence/__pycache__
+chmod 777 -R transcendence/user_management/__pycache__ 
+chmod 777 -R transcendence/user_management/migrations
 
 echo "Starting server..."
 python transcendence/manage.py runserver 0.0.0.0:8000

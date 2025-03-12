@@ -26,7 +26,6 @@ services:
     build: database
     container_name: database
     volumes:
-      #- ./data/db:/var/lib/postgresql/data
       - shared-data:/vault/token/
       - postgres-data:/var/lib/postgresql/data
     depends_on:
@@ -116,7 +115,7 @@ services:
     container_name: node_exporter
     restart: always
     ports:
-      - "9101:9101"
+      - "9100:9100"
     networks:
       - transcendence
 
@@ -145,69 +144,69 @@ services:
     depends_on:
       - nginx
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node  # This is required for single-node setups
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}  # Set your Elasticsearch password
-      - xpack.security.enabled=true # turn on login kibana
-    volumes:
-      - esdata:/usr/share/elasticsearch/data  # Persistent volume for Elasticsearch data
-      - ./elasticsearch:/usr/share/elasticsearch/data  # Mount the script 
-    ports:
-      - "9200:9200"  # Expose the port for accessing Elasticsearch's API
-    networks:
-      - transcendence
+  #elasticsearch:
+  #  image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+  #  container_name: elasticsearch
+  #  environment:
+  #    - discovery.type=single-node  # This is required for single-node setups
+  #    - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}  # Set your Elasticsearch password
+  #    - xpack.security.enabled=true # turn on login kibana
+  #  volumes:
+  #    - esdata:/usr/share/elasticsearch/data  # Persistent volume for Elasticsearch data
+  #    - ./elasticsearch:/usr/share/elasticsearch/data  # Mount the script 
+  #  ports:
+  #    - "9200:9200"  # Expose the port for accessing Elasticsearch's API
+  #  networks:
+  #    - transcendence
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.10.0
-    container_name: logstash
-    environment:
-      - LOGSTASH_PASSWORD=${LOGSTASH_PASSWORD}  # Set password for Logstash if needed
-    volumes:
-      - ./logstash/config:/usr/share/logstash/config  # Mount config files (including pipelines.yml)
-      - ./logstash/pipeline:/usr/share/logstash/pipeline  # Mount pipeline configuration files (like logstash.conf)
-      - ./logs/nginx:/logs/nginx
-      - ./logs/django:/logs/django
-      - ./logs/archive:/logs/archive 
-    ports:
-      - "5044:5044"  # Default port for Logstash input (Beats)
-    networks:
-      - transcendence
-    depends_on:
-      - elasticsearch
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.10.0  # Use the official Kibana image
-    container_name: kibana
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME} 
-      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}   # The password for Elasticsearch
-      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_KEYGEN}
-      - XPACK_SECURITY_ENABLED=true  # Enable security
-      - XPACK_SECURITY_AUTHC_REALMS_NATIVE1_ENABLED=true  # Enable native authentication
-    volumes:
-      - ./kibana/index-pattern.json:/usr/share/kibana/config/index-pattern.json
-      - ./kibana/entrypoint.sh:/usr/share/kibana/config/entrypoint.sh
-      - ./kibana/data:/usr/share/kibana/data  # Persistent Kibana storage
-    ports:
-      - "5601:5601"  # Expose Kibana's web interface
-    networks:
-      - transcendence
-    depends_on:
-      - elasticsearch
-  alpine-setup:
-    image: alpine:latest
-    container_name: alpine-setup
-    entrypoint: ["/bin/sh", "-c", "/usr/share/kibana/data/start.sh"]
-    volumes:
-      - ./kibana/data:/usr/share/kibana/data  # Mount your Kibana directory that contains import.sh
-    depends_on:
-      - kibana
-    networks:
-      - transcendence
-    restart: "no"  # Do not restart this service after the script completes
+  #logstash:
+  #  image: docker.elastic.co/logstash/logstash:7.10.0
+  #  container_name: logstash
+  #  environment:
+  #    - LOGSTASH_PASSWORD=${LOGSTASH_PASSWORD}  # Set password for Logstash if needed
+  #  volumes:
+  #    - ./logstash/config:/usr/share/logstash/config  # Mount config files (including pipelines.yml)
+  #    - ./logstash/pipeline:/usr/share/logstash/pipeline  # Mount pipeline configuration files (like logstash.conf)
+  #    - ./logs/nginx:/logs/nginx
+  #    - ./logs/django:/logs/django
+  #    - ./logs/archive:/logs/archive 
+  #  ports:
+  #    - "5044:5044"  # Default port for Logstash input (Beats)
+  #  networks:
+  #    - transcendence
+  #  depends_on:
+  #    - elasticsearch
+  #kibana:
+  #  image: docker.elastic.co/kibana/kibana:7.10.0  # Use the official Kibana image
+  #  container_name: kibana
+  #  environment:
+  #    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  #    - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME} 
+  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}   # The password for Elasticsearch
+  #    - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_KEYGEN}
+  #    - XPACK_SECURITY_ENABLED=true  # Enable security
+  #    - XPACK_SECURITY_AUTHC_REALMS_NATIVE1_ENABLED=true  # Enable native authentication
+  #  volumes:
+  #    - ./kibana/index-pattern.json:/usr/share/kibana/config/index-pattern.json
+  #    - ./kibana/entrypoint.sh:/usr/share/kibana/config/entrypoint.sh
+  #    - ./kibana/data:/usr/share/kibana/data  # Persistent Kibana storage
+  #  ports:
+  #    - "5601:5601"  # Expose Kibana's web interface
+  #  networks:
+  #    - transcendence
+  #  depends_on:
+  #    - elasticsearch
+  #alpine-setup:
+  #  image: alpine:latest
+  #  container_name: alpine-setup
+  #  entrypoint: ["/bin/sh", "-c", "/usr/share/kibana/data/start.sh"]
+  #  volumes:
+  #    - ./kibana/data:/usr/share/kibana/data  # Mount your Kibana directory that contains import.sh
+  #  depends_on:
+  #    - kibana
+  #  networks:
+  #    - transcendence
+  #  restart: "no"  # Do not restart this service after the script completes
     
 volumes:
   media_volume:

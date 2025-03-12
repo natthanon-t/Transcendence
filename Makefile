@@ -5,12 +5,6 @@ SCRIPT_PATH=/usr/share/elasticsearch/data/createuser.sh
 # Default target
 all: up
 
-# Run database migrations
-migrate:
-
-	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} exec web python /back/transcendence/manage.py makemigrations user_management
-	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} exec web python /back/transcendence/manage.py migrate
-
 restart: down up
 # Build the docker images and the containers and start them
 firstup: up run-script
@@ -21,6 +15,8 @@ up:
 # Stop the containers and remove them
 down:
 	@docker compose -f ${COMPOSE_FILE_PATH} -p ${PROJECT_NAME} down --remove-orphans
+	@rm -rf back/transcendence/transcendence/__pycache__
+	@rm -rf back/transcendence/user_management/__pycache__ back/transcendence/user_management/migrations
 
 # Clean all Docker resources and the data folder
 clean: down hard_clean
